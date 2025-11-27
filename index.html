@@ -1,0 +1,568 @@
+<!DOCTYPE html>
+<html lang="fi">
+<head>
+  <meta charset="UTF-8" />
+  <title>Lääkelistan harjoittelu</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <style>
+    :root {
+      --bg: #f4f6f8;
+      --card-bg: #ffffff;
+      --border: #d0d4db;
+      --header-bg: #255c9b;
+      --header-text: #ffffff;
+      --row-alt: #f8fafc;
+      --accent: #2563eb;
+      --danger: #b91c1c;
+      --text-main: #111827;
+      --text-muted: #6b7280;
+    }
+
+    * {
+      box-sizing: border-box;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+
+    body {
+      margin: 0;
+      padding: 0;
+      background: var(--bg);
+      color: var(--text-main);
+    }
+
+    .container {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 16px;
+    }
+
+    h1 {
+      font-size: 1.4rem;
+      margin-bottom: 8px;
+    }
+
+    .subtitle {
+      font-size: 0.9rem;
+      color: var(--text-muted);
+      margin-bottom: 16px;
+    }
+
+    .card {
+      background: var(--card-bg);
+      border-radius: 12px;
+      padding: 16px 18px;
+      box-shadow: 0 10px 25px rgba(15, 23, 42, 0.08);
+      margin-bottom: 16px;
+      border: 1px solid rgba(148, 163, 184, 0.3);
+    }
+
+    .card-header {
+      display: flex;
+      align-items: baseline;
+      justify-content: space-between;
+      gap: 8px;
+      margin-bottom: 8px;
+    }
+
+    .card-title {
+      font-weight: 600;
+      font-size: 0.95rem;
+    }
+
+    .card-badge {
+      font-size: 0.7rem;
+      padding: 3px 8px;
+      border-radius: 999px;
+      background: #e0f2fe;
+      color: #0369a1;
+    }
+
+    .card-body {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      white-space: pre-line;
+    }
+
+    .note-label {
+      font-size: 0.75rem;
+      font-weight: 600;
+      margin-top: 10px;
+      margin-bottom: 4px;
+      color: var(--text-muted);
+    }
+
+    .note-area {
+      width: 100%;
+      min-height: 60px;
+      border-radius: 8px;
+      border: 1px solid var(--border);
+      font-size: 0.8rem;
+      padding: 8px;
+      resize: vertical;
+    }
+
+    .table-card-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 8px;
+    }
+
+    .table-card-title {
+      font-size: 0.95rem;
+      font-weight: 600;
+    }
+
+    .btn {
+      border: none;
+      cursor: pointer;
+      border-radius: 999px;
+      font-size: 0.8rem;
+      padding: 6px 12px;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      transition: background 0.15s ease, transform 0.05s ease;
+    }
+
+    .btn-primary {
+      background: var(--accent);
+      color: white;
+    }
+
+    .btn-primary:hover {
+      filter: brightness(1.05);
+      transform: translateY(-1px);
+    }
+
+    .btn-ghost {
+      background: transparent;
+      color: var(--accent);
+      border: 1px solid rgba(37, 99, 235, 0.4);
+    }
+
+    .btn-ghost:hover {
+      background: rgba(37, 99, 235, 0.05);
+    }
+
+    .btn-icon {
+      background: transparent;
+      border: none;
+      color: var(--danger);
+      cursor: pointer;
+      padding: 4px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 999px;
+    }
+
+    .btn-icon:hover {
+      background: rgba(185, 28, 28, 0.06);
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.78rem;
+      border-radius: 10px;
+      overflow: hidden;
+      border: 1px solid var(--border);
+    }
+
+    thead {
+      background: linear-gradient(90deg, #1e3a8a, #2563eb);
+      color: var(--header-text);
+    }
+
+    thead th {
+      padding: 6px 8px;
+      text-align: left;
+      font-weight: 500;
+      border-right: 1px solid rgba(255, 255, 255, 0.1);
+      white-space: nowrap;
+    }
+
+    thead th:last-child {
+      border-right: none;
+      text-align: center;
+    }
+
+    tbody tr:nth-child(odd) {
+      background: white;
+    }
+
+    tbody tr:nth-child(even) {
+      background: var(--row-alt);
+    }
+
+    tbody td {
+      padding: 4px 6px;
+      border-bottom: 1px solid rgba(148, 163, 184, 0.4);
+      vertical-align: middle;
+    }
+
+    tbody tr:last-child td {
+      border-bottom: none;
+    }
+
+    .med-input {
+      width: 100%;
+      border-radius: 6px;
+      border: 1px solid rgba(148, 163, 184, 0.8);
+      background: rgba(255, 255, 255, 0.9);
+      font-size: 0.75rem;
+      padding: 3px 5px;
+    }
+
+    .med-select {
+      width: 100%;
+      border-radius: 6px;
+      border: 1px solid rgba(148, 163, 184, 0.8);
+      background: rgba(255, 255, 255, 0.95);
+      font-size: 0.75rem;
+      padding: 3px 5px;
+    }
+
+    .feedback {
+      margin-top: 10px;
+      font-size: 0.8rem;
+      padding: 8px 10px;
+      border-radius: 8px;
+      display: none;
+    }
+
+    .feedback.ok {
+      background: #ecfdf3;
+      color: #166534;
+      border: 1px solid #bbf7d0;
+    }
+
+    .feedback.warn {
+      background: #fef9c3;
+      color: #854d0e;
+      border: 1px solid #facc15;
+    }
+
+    .footer {
+      margin-top: 14px;
+      font-size: 0.7rem;
+      color: var(--text-muted);
+    }
+
+    @media (max-width: 800px) {
+      table {
+        font-size: 0.7rem;
+      }
+
+      thead {
+        display: none;
+      }
+
+      table, tbody, tr, td {
+        display: block;
+        width: 100%;
+      }
+
+      tbody tr {
+        margin-bottom: 8px;
+        border-radius: 10px;
+        overflow: hidden;
+        border: 1px solid rgba(148, 163, 184, 0.6);
+      }
+
+      tbody td {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 6px 8px;
+      }
+
+      tbody td::before {
+        content: attr(data-label);
+        font-weight: 600;
+        margin-right: 8px;
+        color: var(--text-muted);
+        min-width: 90px;
+      }
+
+      .btn-icon {
+        margin-left: auto;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Lääkelistan harjoittelu</h1>
+    <div class="subtitle">
+      Harjoitusympäristö (ei oikeita potilastietoja). Täytä lääkelista määräyksen mukaisesti ja tarkista vastaus.
+    </div>
+
+    <!-- MÄÄRÄYS / TEHTÄVÄNANTO -->
+    <div class="card" id="task-card">
+      <div class="card-header">
+        <div class="card-title">Määräys / tehtävänanto</div>
+        <div class="card-badge">Demo</div>
+      </div>
+      <div class="card-body" id="task-description">
+        <!-- Täytetään JavaScriptillä -->
+      </div>
+      <div class="note-label">Omat muistiinpanot (ei vaikuta tarkistukseen):</div>
+      <textarea class="note-area" placeholder="Kirjoita muistiinpanot tähän..."></textarea>
+    </div>
+
+    <!-- LÄÄKELISTA -->
+    <div class="card">
+      <div class="table-card-header">
+        <div class="table-card-title">Lääkelista (harjoitus)</div>
+        <button class="btn btn-ghost" id="add-med-btn">
+          <span>＋ Lisää lääke</span>
+        </button>
+      </div>
+
+      <div class="table-wrapper">
+        <table id="med-table">
+          <thead>
+            <tr>
+              <th>Lääke</th>
+              <th>Vahvuus</th>
+              <th>Antotapa</th>
+              <th>Annostus</th>
+              <th>Tila</th>
+              <th style="width:40px;">&nbsp;</th>
+            </tr>
+          </thead>
+          <tbody id="med-tbody">
+            <!-- Rivien sisältö tulee JavaScriptillä -->
+          </tbody>
+        </table>
+      </div>
+
+      <div style="margin-top: 12px; display: flex; gap: 8px; flex-wrap: wrap;">
+        <button class="btn btn-primary" id="check-btn">
+          ✅ Tarkista vastaus
+        </button>
+        <button class="btn btn-ghost" id="reset-btn">
+          Palauta alkuperäinen lista
+        </button>
+      </div>
+
+      <div id="feedback" class="feedback"></div>
+
+      <div class="footer">
+        Vinkki: muokkaa tehtävänantoa, lähtölistaa ja malliratkaisua suoraan index.html-tiedoston <code>&lt;script&gt;</code>-osasta.
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // ---------- TEHTÄVÄ & DATA (MUOKKAAT NÄITÄ) ----------
+
+    const task = {
+      title: "Tehtävä 1 – Uuden kipulääkkeen aloitus",
+      description: `Potilaalla on entuudestaan Lääke A 500 mg 1 x 3 p.o.
+
+Tehtävä:
+Lisää lääkelistalle uusi kipulääke:
+• Lääke B 10 mg p.o.
+• Annostus 1 x 1 iltaisin
+• Tila: Voimassa`,
+      initialList: [
+        {
+          drug: "Lääke A",
+          strength: "500 mg",
+          route: "p.o.",
+          dose: "1 x 3",
+          status: "Voimassa"
+        }
+      ],
+      targetList: [
+        {
+          drug: "Lääke A",
+          strength: "500 mg",
+          route: "p.o.",
+          dose: "1 x 3",
+          status: "Voimassa"
+        },
+        {
+          drug: "Lääke B",
+          strength: "10 mg",
+          route: "p.o.",
+          dose: "1 x 1 iltaisin",
+          status: "Voimassa"
+        }
+      ]
+    };
+
+    // ---------- SOVELLUSLOGIIKKA ----------
+
+    let meds = JSON.parse(JSON.stringify(task.initialList)); // syväkopio
+
+    const taskDescriptionEl = document.getElementById("task-description");
+    const tbody = document.getElementById("med-tbody");
+    const addMedBtn = document.getElementById("add-med-btn");
+    const checkBtn = document.getElementById("check-btn");
+    const resetBtn = document.getElementById("reset-btn");
+    const feedbackEl = document.getElementById("feedback");
+
+    function renderTask() {
+      taskDescriptionEl.textContent = task.description;
+    }
+
+    function renderTable() {
+      tbody.innerHTML = "";
+      meds.forEach((med, index) => {
+        const tr = document.createElement("tr");
+
+        const createCell = (label, value, onInput) => {
+          const td = document.createElement("td");
+          td.setAttribute("data-label", label);
+          const input = document.createElement("input");
+          input.className = "med-input";
+          input.value = value || "";
+          input.addEventListener("input", (e) => {
+            onInput(e.target.value);
+          });
+          td.appendChild(input);
+          return td;
+        };
+
+        tr.appendChild(
+          createCell("Lääke", med.drug, (val) => (meds[index].drug = val))
+        );
+        tr.appendChild(
+          createCell("Vahvuus", med.strength, (val) => (meds[index].strength = val))
+        );
+        tr.appendChild(
+          createCell("Antotapa", med.route, (val) => (meds[index].route = val))
+        );
+        tr.appendChild(
+          createCell("Annostus", med.dose, (val) => (meds[index].dose = val))
+        );
+
+        // Tila (select)
+        const tdStatus = document.createElement("td");
+        tdStatus.setAttribute("data-label", "Tila");
+        const select = document.createElement("select");
+        select.className = "med-select";
+        ["Voimassa", "Lopetettu"].forEach((opt) => {
+          const o = document.createElement("option");
+          o.value = opt;
+          o.textContent = opt;
+          if (med.status === opt) o.selected = true;
+          select.appendChild(o);
+        });
+        select.addEventListener("change", (e) => {
+          meds[index].status = e.target.value;
+        });
+        tdStatus.appendChild(select);
+        tr.appendChild(tdStatus);
+
+        // Poisto
+        const tdDelete = document.createElement("td");
+        tdDelete.style.textAlign = "center";
+        tdDelete.setAttribute("data-label", "Poista");
+        const delBtn = document.createElement("button");
+        delBtn.className = "btn-icon";
+        delBtn.innerHTML = "🗑";
+        delBtn.title = "Poista rivi";
+        delBtn.addEventListener("click", () => {
+          meds.splice(index, 1);
+          renderTable();
+        });
+        tdDelete.appendChild(delBtn);
+        tr.appendChild(tdDelete);
+
+        tbody.appendChild(tr);
+      });
+    }
+
+    function normalizeList(list) {
+      return list
+        .map((m) => ({
+          drug: (m.drug || "").trim().toLowerCase(),
+          strength: (m.strength || "").trim().toLowerCase(),
+          route: (m.route || "").trim().toLowerCase(),
+          dose: (m.dose || "").trim().toLowerCase(),
+          status: (m.status || "").trim().toLowerCase()
+        }))
+        .filter((m) => m.drug || m.strength || m.route || m.dose) // tyhjät rivit pois
+        .sort((a, b) => a.drug.localeCompare(b.drug));
+    }
+
+    function checkAnswer() {
+      const user = normalizeList(meds);
+      const target = normalizeList(task.targetList);
+
+      if (user.length !== target.length) {
+        showFeedback(
+          "Lääkkeiden lukumäärä ei täsmää malliin.",
+          false
+        );
+        return;
+      }
+
+      for (let i = 0; i < user.length; i++) {
+        const u = user[i];
+        const t = target[i];
+
+        if (
+          u.drug !== t.drug ||
+          u.strength !== t.strength ||
+          u.route !== t.route ||
+          u.dose !== t.dose ||
+          u.status !== t.status
+        ) {
+          showFeedback(
+            `Rivillä ${i + 1} on eroja (lääke / vahvuus / antotapa / annostus / tila ei täsmää).`,
+            false
+          );
+          return;
+        }
+      }
+
+      showFeedback("Hienoa! Lääkelista vastaa malliratkaisua. ✅", true);
+    }
+
+    function showFeedback(message, ok) {
+      feedbackEl.textContent = message;
+      feedbackEl.classList.remove("ok", "warn");
+      feedbackEl.classList.add(ok ? "ok" : "warn");
+      feedbackEl.style.display = "block";
+    }
+
+    function resetList() {
+      meds = JSON.parse(JSON.stringify(task.initialList));
+      renderTable();
+      feedbackEl.style.display = "none";
+    }
+
+    // ---------- TAPAHTUMAT ----------
+
+    addMedBtn.addEventListener("click", () => {
+      meds.push({
+        drug: "",
+        strength: "",
+        route: "",
+        dose: "",
+        status: "Voimassa"
+      });
+      renderTable();
+    });
+
+    checkBtn.addEventListener("click", () => {
+      checkAnswer();
+    });
+
+    resetBtn.addEventListener("click", () => {
+      resetList();
+    });
+
+    // ---------- INIT ----------
+
+    renderTask();
+    renderTable();
+  </script>
+</body>
+</html>
