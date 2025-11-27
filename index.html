@@ -245,6 +245,16 @@
       padding: 2px 4px;
     }
 
+    .dose-slot-input {
+      width: 100%;
+      border-radius: 4px;
+      border: 1px solid rgba(148, 163, 184, 0.9);
+      background: rgba(255, 255, 255, 0.96);
+      font-size: 0.7rem;
+      padding: 2px 0;
+      text-align: center;
+    }
+
     .feedback {
       margin-top: 8px;
       font-size: 0.78rem;
@@ -317,7 +327,7 @@
   <div class="container">
     <h1>Lääkelistan harjoittelu (Lifecare-tyyli)</h1>
     <div class="subtitle">
-      Harjoitusympäristö – ei oikeita potilastietoja. Täytä lääkelista tehtävänannon mukaan ja tarkista vastaus.
+      Harjoitusympäristö – ei oikeita potilastietoja. Täytä lääkelista tehtävänannon mukaan ja tarkista sekä lääkelista että antoväli (AY, A, AP, P, IP, I, Y).
     </div>
 
     <!-- MÄÄRÄYS / TEHTÄVÄNANTO -->
@@ -326,9 +336,7 @@
         <div class="card-title">Määräys / tehtävänanto</div>
         <div class="card-badge">Demo</div>
       </div>
-      <div class="card-body" id="task-description">
-        <!-- Täytetään JavaScriptillä -->
-      </div>
+      <div class="card-body" id="task-description"></div>
       <div class="note-label">Omat muistiinpanot (ei vaikuta tarkistukseen):</div>
       <textarea class="note-area" placeholder="Kirjoita muistiinpanot tähän..."></textarea>
     </div>
@@ -354,10 +362,42 @@
               <th style="width: 6%;">&nbsp;</th>
             </tr>
           </thead>
-          <tbody id="med-tbody">
-            <!-- Rivien sisältö tulee JavaScriptillä -->
-          </tbody>
+          <tbody id="med-tbody"></tbody>
         </table>
+      </div>
+
+      <div class="footer">
+        Värillinen otsikkorivi ja tiivis taulukko muistuttavat Lifecare-lääkityslistaa. Lääkkeen nimen valinnasta vahvuus ja muoto tulevat automaattisesti.
+      </div>
+    </div>
+
+    <!-- ANTOVÄLI / VUOROKAUSIJAKO -->
+    <div class="card">
+      <div class="table-card-header">
+        <div class="table-card-title">Antoväli / vuorokausijako</div>
+      </div>
+
+      <div class="table-wrapper">
+        <table id="dose-table">
+          <thead>
+            <tr>
+              <th style="width: 26%;">Lääke</th>
+              <th>AY</th>
+              <th>A</th>
+              <th>AP</th>
+              <th>P</th>
+              <th>IP</th>
+              <th>I</th>
+              <th>Y</th>
+            </tr>
+          </thead>
+          <tbody id="dose-tbody"></tbody>
+        </table>
+      </div>
+
+      <div class="footer">
+        Kirjaimet: AY = aamu-yöväli, A = aamu, AP = aamu-päiväväli, P = päivä, IP = iltapäiväväli, I = ilta, Y = yö.  
+        Esim. 1 x 3 voidaan jakaa 1 A, 1 P ja 1 I.
       </div>
 
       <div style="margin-top: 10px; display: flex; gap: 8px; flex-wrap: wrap;">
@@ -370,52 +410,56 @@
       </div>
 
       <div id="feedback" class="feedback"></div>
-
-      <div class="footer">
-        Vinkki: muokkaa tehtävänantoa, lähtölistaa, malliratkaisua ja lääkekatalogia suoraan index.html-tiedoston <code>&lt;script&gt;</code>-osasta.
-      </div>
     </div>
   </div>
 
   <!-- LÄÄKELUETTELO (HAKU) -->
-  <datalist id="medications-list">
-    <!-- Täytetään JavaScriptillä MEDICATIONS-taulukosta -->
-  </datalist>
+  <datalist id="medications-list"></datalist>
 
   <script>
     // ---------- LÄÄKEKATALOGI (virallisia kauppanimiä) -----------
 
     const MEDICATIONS = [
-      { code: "PANADOL_1G_TAB",  name: "Panadol 1 g tabletti",           strength: "1 g",   form: "tabletti" },
-      { code: "PANADOL_500_TAB", name: "Panadol 500 mg tabletti",        strength: "500 mg",form: "tabletti" },
-      { code: "BURANA_400_TAB",  name: "Burana 400 mg tabletti",         strength: "400 mg",form: "tabletti" },
-      { code: "MAREVAN_3_TAB",   name: "Marevan 3 mg tabletti",          strength: "3 mg",  form: "tabletti" },
-      { code: "METFOREM_500",    name: "Metforem 500 mg tabletti",       strength: "500 mg",form: "tabletti" },
+      { code: "PANADOL_1G_TAB",  name: "Panadol 1 g tabletti",           strength: "1 g",       form: "tabletti" },
+      { code: "PANADOL_500_TAB", name: "Panadol 500 mg tabletti",        strength: "500 mg",    form: "tabletti" },
+      { code: "BURANA_400_TAB",  name: "Burana 400 mg tabletti",         strength: "400 mg",    form: "tabletti" },
+      { code: "MAREVAN_3_TAB",   name: "Marevan 3 mg tabletti",          strength: "3 mg",      form: "tabletti" },
+      { code: "METFOREM_500",    name: "Metforem 500 mg tabletti",       strength: "500 mg",    form: "tabletti" },
       { code: "LANTUS_SOLO",     name: "Lantus SoloStar 100 IU/ml inj",  strength: "100 IU/ml", form: "injektio" },
-      { code: "SERTRALIN_50",    name: "Sertralin Orion 50 mg tabletti", strength: "50 mg", form: "tabletti" },
-      { code: "CIPRALEX_10",     name: "Cipralex 10 mg tabletti",        strength: "10 mg", form: "tabletti" },
-      { code: "SIMVA_20",        name: "Simvastatin Orion 20 mg tabl.",  strength: "20 mg", form: "tabletti" },
-      { code: "ATORVA_40",       name: "Atorvastatin Krka 40 mg tabl.",  strength: "40 mg", form: "tabletti" }
+      { code: "SERTRALIN_50",    name: "Sertralin Orion 50 mg tabletti", strength: "50 mg",     form: "tabletti" },
+      { code: "CIPRALEX_10",     name: "Cipralex 10 mg tabletti",        strength: "10 mg",     form: "tabletti" },
+      { code: "SIMVA_20",        name: "Simvastatin Orion 20 mg tabl.",  strength: "20 mg",     form: "tabletti" },
+      { code: "ATORVA_40",       name: "Atorvastatin Krka 40 mg tabl.",  strength: "40 mg",     form: "tabletti" }
     ];
 
     // ---------- TEHTÄVÄ & HARJOITUSDATA (muokattavissa) ----------
 
     const task = {
-      title: "Tehtävä 1 – Panadol 500 mg, saatavilla Panadol 1 g valmiste",
-      description: `Potilaalle on määrätty parasetamolia 500 mg suun kautta (p.o.) tarvittaessa kipuun.
+      title: "Tehtävä 1 – Panadol-valmiste ja annosjako",
+      description: `Potilaalla on entuudestaan:
+
+• Metforem 500 mg tabletti 1 x 2 (A + I)
+
+Uusi määräys:
+• Parasetamoli 500 mg suun kautta (p.o.) tarvittaessa kipuun, 1 x 1 (aamu)
 
 Osastolla käytössä oleva valmiste on:
 • Panadol 1 g tabletti
 
 Tehtävä:
-1. Lisää lääkelistalle Panadol 1 g tabletti.
-2. Määritä annostus vastaamaan määräystä 500 mg:
-   → annostus: 0,5 x 1 (puolet tabletista kerralla)
-3. Tila: Voimassa.
+1. Varmista, että Metforem on lääkelistalla annoksella 1 x 2 ja jaettuna antovälissä niin, että 1 A ja 1 I.
+2. Lisää lääkelistalle Panadol 1 g tabletti.
+3. Määritä annostus Panadolille vastaamaan määräystä 500 mg x 1 (aamu):
+   → annostus: 0,5 x 1
+   → antoväli-taulukkoon: 0,5 A
+4. Tila: Voimassa.
 
-Huomio:
-• Vahvuus tulee automaattisesti, kun valitset valmistetta vastaavan nimen.
-• Annostuskenttään kirjoitat itse fraktion (esim. 0,5 x 1).`,
+Huom:
+• Vahvuus ja muoto tulevat automaattisesti, kun valitset valmistetta vastaavan nimen.
+• Annostus (esim. 0,5 x 1 tai 1 x 3) kirjoitetaan tekstikenttään.
+• AY, A, AP, P, IP, I, Y -kohta täytetään tablettimäärällä (esim. 1 tai 0,5).`,
+
+      // Lähtötilanne (Metforem lääkelistalla, annosjako vielä tyhjä)
       initialList: [
         {
           medCode: "METFOREM_500",
@@ -423,9 +467,12 @@ Huomio:
           strength: "500 mg",
           form: "tabletti",
           dose: "1 x 2",
-          status: "Voimassa"
+          status: "Voimassa",
+          ay: "", a: "", ap: "", p: "", ip: "", i: "", y: ""
         }
       ],
+
+      // Malliratkaisu: Metforem + Panadol oikein ja oikein jaettu antoväliin
       targetList: [
         {
           medCode: "METFOREM_500",
@@ -433,7 +480,9 @@ Huomio:
           strength: "500 mg",
           form: "tabletti",
           dose: "1 x 2",
-          status: "Voimassa"
+          status: "Voimassa",
+          // Metforem 1 x 2 → esim. 1 A ja 1 I
+          ay: "", a: "1", ap: "", p: "", ip: "", i: "1", y: ""
         },
         {
           medCode: "PANADOL_1G_TAB",
@@ -441,8 +490,24 @@ Huomio:
           strength: "1 g",
           form: "tabletti",
           dose: "0,5 x 1",
-          status: "Voimassa"
+          status: "Voimassa",
+          // Panadol 0,5 x 1 → 0,5 A
+          ay: "", a: "0,5", ap: "", p: "", ip: "", i: "", y: ""
         }
+
+        // Jos haluat 1 x 3 -lääkkeen jaon (1 A, 1 P, 1 I),
+        // tässä olisi esimerkki:
+        /*
+        {
+          medCode: "ESIMERKKI_1X3",
+          drugName: "Esimerkkilääke 500 mg tabletti",
+          strength: "500 mg",
+          form: "tabletti",
+          dose: "1 x 3",
+          status: "Voimassa",
+          ay: "", a: "1", ap: "", p: "1", ip: "", i: "1", y: ""
+        }
+        */
       ]
     };
 
@@ -452,6 +517,7 @@ Huomio:
 
     const taskDescriptionEl = document.getElementById("task-description");
     const tbody = document.getElementById("med-tbody");
+    const doseTbody = document.getElementById("dose-tbody");
     const addMedBtn = document.getElementById("add-med-btn");
     const checkBtn = document.getElementById("check-btn");
     const resetBtn = document.getElementById("reset-btn");
@@ -466,7 +532,6 @@ Huomio:
     });
 
     function renderTask() {
-      document.querySelector("#task-card .card-title").textContent = "Määräys / tehtävänanto";
       taskDescriptionEl.textContent = task.description;
     }
 
@@ -475,9 +540,21 @@ Huomio:
       return MEDICATIONS.find(m => m.name.toLowerCase() === trimmed) || null;
     }
 
-    function renderTable() {
+    function ensureScheduleFields(med) {
+      // varmistetaan, että aikakentät on olemassa
+      const keys = ["ay", "a", "ap", "p", "ip", "i", "y"];
+      keys.forEach(k => {
+        if (typeof med[k] === "undefined") {
+          med[k] = "";
+        }
+      });
+      return med;
+    }
+
+    function renderMedTable() {
       tbody.innerHTML = "";
       meds.forEach((med, index) => {
+        ensureScheduleFields(med);
         const tr = document.createElement("tr");
 
         const createInputCell = (label, value, onInput, options = {}) => {
@@ -504,7 +581,7 @@ Huomio:
           return td;
         };
 
-        // LÄÄKENIMI (hakukenttä + datalist)
+        // Lääkenimi
         const drugCell = createInputCell(
           "Lääke",
           med.drugName || "",
@@ -520,7 +597,7 @@ Huomio:
                 meds[index].drugName = match.name;
                 meds[index].strength = match.strength;
                 meds[index].form = match.form;
-                renderTable(); // päivitetään vahvuus + muoto
+                renderAll();
               } else {
                 meds[index].medCode = null;
               }
@@ -529,7 +606,7 @@ Huomio:
         );
         tr.appendChild(drugCell);
 
-        // VAHVUUS – automaattinen, jos medCode tunnetaan
+        // Vahvuus
         const isKnown = !!med.medCode;
         const strengthCell = createInputCell(
           "Vahvuus",
@@ -541,7 +618,7 @@ Huomio:
         );
         tr.appendChild(strengthCell);
 
-        // MUOTO – automaattinen, jos tunnettu lääke
+        // Muoto
         const formCell = createInputCell(
           "Lääkemuoto",
           med.form || "",
@@ -552,7 +629,7 @@ Huomio:
         );
         tr.appendChild(formCell);
 
-        // ANNOSTUS – käyttäjä syöttää myös fraktion, esim. 0,5 x 1
+        // Annostus
         const doseCell = createInputCell(
           "Annostus",
           med.dose || "",
@@ -562,7 +639,7 @@ Huomio:
         );
         tr.appendChild(doseCell);
 
-        // TILA – select
+        // Tila
         const tdStatus = document.createElement("td");
         tdStatus.setAttribute("data-label", "Tila");
         const select = document.createElement("select");
@@ -579,7 +656,7 @@ Huomio:
         tdStatus.appendChild(select);
         tr.appendChild(tdStatus);
 
-        // POISTO
+        // Poisto
         const tdDelete = document.createElement("td");
         tdDelete.setAttribute("data-label", "Poista");
         tdDelete.style.textAlign = "center";
@@ -589,13 +666,56 @@ Huomio:
         delBtn.title = "Poista rivi";
         delBtn.addEventListener("click", () => {
           meds.splice(index, 1);
-          renderTable();
+          renderAll();
         });
         tdDelete.appendChild(delBtn);
         tr.appendChild(tdDelete);
 
         tbody.appendChild(tr);
       });
+    }
+
+    function renderDoseTable() {
+      doseTbody.innerHTML = "";
+      meds.forEach((med, index) => {
+        ensureScheduleFields(med);
+        const tr = document.createElement("tr");
+
+        const createDoseCell = (label, fieldKey) => {
+          const td = document.createElement("td");
+          td.setAttribute("data-label", label);
+          const input = document.createElement("input");
+          input.className = "dose-slot-input";
+          input.value = med[fieldKey] || "";
+          input.addEventListener("input", (e) => {
+            meds[index][fieldKey] = e.target.value;
+          });
+          td.appendChild(input);
+          return td;
+        };
+
+        // Lääkenimi (readonly teksti)
+        const tdName = document.createElement("td");
+        tdName.setAttribute("data-label", "Lääke");
+        tdName.textContent = med.drugName || "";
+        tr.appendChild(tdName);
+
+        // AY, A, AP, P, IP, I, Y
+        tr.appendChild(createDoseCell("AY", "ay"));
+        tr.appendChild(createDoseCell("A", "a"));
+        tr.appendChild(createDoseCell("AP", "ap"));
+        tr.appendChild(createDoseCell("P", "p"));
+        tr.appendChild(createDoseCell("IP", "ip"));
+        tr.appendChild(createDoseCell("I", "i"));
+        tr.appendChild(createDoseCell("Y", "y"));
+
+        doseTbody.appendChild(tr);
+      });
+    }
+
+    function renderAll() {
+      renderMedTable();
+      renderDoseTable();
     }
 
     function normalizeList(list) {
@@ -605,9 +725,16 @@ Huomio:
           strength: (m.strength || "").trim().toLowerCase(),
           form: (m.form || "").trim().toLowerCase(),
           dose: (m.dose || "").trim().toLowerCase(),
-          status: (m.status || "").trim().toLowerCase()
+          status: (m.status || "").trim().toLowerCase(),
+          ay: (m.ay || "").trim().replace(",", "."),
+          a:  (m.a  || "").trim().replace(",", "."),
+          ap: (m.ap || "").trim().replace(",", "."),
+          p:  (m.p  || "").trim().replace(",", "."),
+          ip: (m.ip || "").trim().replace(",", "."),
+          i:  (m.i  || "").trim().replace(",", "."),
+          y:  (m.y  || "").trim().replace(",", ".")
         }))
-        .filter((m) => m.drugName || m.strength || m.dose) // tyhjät rivit pois
+        .filter((m) => m.drugName || m.strength || m.dose)
         .sort((a, b) => a.drugName.localeCompare(b.drugName));
     }
 
@@ -616,10 +743,7 @@ Huomio:
       const target = normalizeList(task.targetList);
 
       if (user.length !== target.length) {
-        showFeedback(
-          "Lääkkeiden lukumäärä ei täsmää malliratkaisuun.",
-          false
-        );
+        showFeedback("Lääkkeiden lukumäärä ei täsmää malliratkaisuun.", false);
         return;
       }
 
@@ -627,25 +751,39 @@ Huomio:
         const u = user[i];
         const t = target[i];
 
-        if (
+        const baseMismatch =
           u.drugName !== t.drugName ||
           u.strength !== t.strength ||
           u.form !== t.form ||
           u.dose !== t.dose ||
-          u.status !== t.status
-        ) {
+          u.status !== t.status;
+
+        const scheduleMismatch =
+          u.ay !== t.ay ||
+          u.a  !== t.a  ||
+          u.ap !== t.ap ||
+          u.p  !== t.p  ||
+          u.ip !== t.ip ||
+          u.i  !== t.i  ||
+          u.y  !== t.y;
+
+        if (baseMismatch || scheduleMismatch) {
+          let extraHint = "";
+          if (t.dose === "1 x 2" && (t.a === "1" && t.i === "1")) {
+            extraHint = " Vinkki: Metforem 1 x 2 → 1 A ja 1 I.";
+          }
+          if (t.dose === "0,5 x 1" && t.a === "0.5") {
+            extraHint = " Vinkki: Panadol 1 g 0,5 x 1 → 0,5 A.";
+          }
           showFeedback(
-            `Rivillä ${i + 1} on eroja (lääke / vahvuus / muoto / annostus / tila).` +
-            (t.drugName.includes("panadol 1 g") && t.dose === "0,5 x 1"
-              ? " Vinkki: muista, että 500 mg = 0,5 x 1 g tabletti."
-              : ""),
+            `Rivillä ${i + 1} on eroja (lääke / vahvuus / muoto / annostus / tila tai AY–Y -jako).` + extraHint,
             false
           );
           return;
         }
       }
 
-      showFeedback("Hienoa! Lääkelista vastaa malliratkaisua. ✅", true);
+      showFeedback("Hienoa! Lääkelista ja antoväli vastaavat malliratkaisua. ✅", true);
     }
 
     function showFeedback(message, ok) {
@@ -657,7 +795,7 @@ Huomio:
 
     function resetList() {
       meds = JSON.parse(JSON.stringify(task.initialList));
-      renderTable();
+      renderAll();
       feedbackEl.style.display = "none";
     }
 
@@ -670,9 +808,10 @@ Huomio:
         strength: "",
         form: "",
         dose: "",
-        status: "Voimassa"
+        status: "Voimassa",
+        ay: "", a: "", ap: "", p: "", ip: "", i: "", y: ""
       });
-      renderTable();
+      renderAll();
     });
 
     checkBtn.addEventListener("click", () => {
@@ -685,8 +824,12 @@ Huomio:
 
     // ---------- INIT ----------
 
-    renderTask();
-    renderTable();
+    (function init() {
+      document.querySelector("#task-card .card-title").textContent = "Määräys / tehtävänanto";
+      taskDescriptionEl.textContent = task.description;
+      renderAll();
+    })();
   </script>
 </body>
 </html>
+
