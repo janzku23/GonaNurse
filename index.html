@@ -80,6 +80,7 @@
       border-radius: 999px;
       background: #e0f2fe;
       color: #0369a1;
+      white-space: nowrap;
     }
 
     .card-body {
@@ -299,19 +300,19 @@
   <div class="container">
     <h1>Lääkelistan harjoittelu (Lifecare-tyyli)</h1>
     <div class="subtitle">
-      Harjoitusympäristö – ei oikeita potilastietoja. Täytä lääkelista tehtävänannon mukaan ja tarkista sekä annostus että AY–A–AP–P–IP–I–Y-jako.
+      Harjoitusympäristö – ei oikeita potilastietoja. Tee lääkelista lääkärin tekstin mukaan ja etene uusiin määräyksiin päivä kerrallaan.
     </div>
 
     <!-- MÄÄRÄYS / TEHTÄVÄNANTO -->
     <div class="card" id="task-card">
       <div class="card-header">
-        <div class="card-title">Määräys / tehtävänanto</div>
-        <div class="card-badge">Demo</div>
+        <div class="card-title" id="task-title"></div>
+        <div class="card-badge" id="task-badge"></div>
       </div>
       <div class="card-body" id="task-description"></div>
     </div>
 
-    <!-- LÄÄKELISTA (YHDESSÄ RIVISSÄ MUKANA AY..Y) -->
+    <!-- LÄÄKELISTA (Lifecare-tyyli, AY..Y samalla rivillä) -->
     <div class="card">
       <div class="table-card-header">
         <div class="table-card-title">Lääkelista</div>
@@ -347,12 +348,15 @@
         AY, A, AP, P, IP, I, Y: merkitse tablettimäärä (esim. 1, 0,5) oikeaan kellonaikaan.
       </div>
 
-      <div style="margin-top: 10px; display: flex; gap: 8px; flex-wrap: wrap;">
+      <div style="margin-top: 10px; display: flex; gap: 8px; flex-wrap: wrap; align-items: center;">
         <button class="btn btn-primary" id="check-btn">
-          ✅ Tarkista vastaus
+          ✅ Tarkista tämä tehtävä
+        </button>
+        <button class="btn btn-ghost" id="next-btn" style="display:none;">
+          Seuraava määräys ▶︎
         </button>
         <button class="btn btn-ghost" id="reset-btn">
-          Palauta alkuperäinen lista
+          Palauta alkuperäinen tila
         </button>
       </div>
 
@@ -367,91 +371,168 @@
     // ---------- LÄÄKEKATALOGI ----------
 
     const MEDICATIONS = [
-      { code: "PANADOL_1G_TAB",  name: "Panadol 1 g tabletti",           strength: "1 g",       form: "tabletti" },
-      { code: "PANADOL_500_TAB", name: "Panadol 500 mg tabletti",        strength: "500 mg",    form: "tabletti" },
-      { code: "BURANA_400_TAB",  name: "Burana 400 mg tabletti",         strength: "400 mg",    form: "tabletti" },
-      { code: "MAREVAN_3_TAB",   name: "Marevan 3 mg tabletti",          strength: "3 mg",      form: "tabletti" },
-      { code: "METFOREM_500",    name: "Metforem 500 mg tabletti",       strength: "500 mg",    form: "tabletti" },
-      { code: "LANTUS_SOLO",     name: "Lantus SoloStar 100 IU/ml inj",  strength: "100 IU/ml", form: "injektio" },
-      { code: "SERTRALIN_50",    name: "Sertralin Orion 50 mg tabletti", strength: "50 mg",     form: "tabletti" },
-      { code: "CIPRALEX_10",     name: "Cipralex 10 mg tabletti",        strength: "10 mg",     form: "tabletti" },
-      { code: "SIMVA_20",        name: "Simvastatin Orion 20 mg tabl.",  strength: "20 mg",     form: "tabletti" },
-      { code: "ATORVA_40",       name: "Atorvastatin Krka 40 mg tabl.",  strength: "40 mg",     form: "tabletti" }
+      { code: "PANADOL_1G_TAB",   name: "Panadol 1 g tabletti",               strength: "1 g",         form: "tabletti" },
+      { code: "PANADOL_500_TAB",  name: "Panadol 500 mg tabletti",            strength: "500 mg",      form: "tabletti" },
+      { code: "BURANA_400_TAB",   name: "Burana 400 mg tabletti",             strength: "400 mg",      form: "tabletti" },
+      { code: "MAREVAN_3_TAB",    name: "Marevan 3 mg tabletti",              strength: "3 mg",        form: "tabletti" },
+      { code: "METFOREM_500",     name: "Metforem 500 mg tabletti",           strength: "500 mg",      form: "tabletti" },
+      { code: "LANTUS_SOLO",      name: "Lantus SoloStar 100 IU/ml inj s.c.", strength: "100 IU/ml",   form: "injektio s.c." },
+      { code: "SERTRALIN_50",     name: "Sertralin Orion 50 mg tabletti",     strength: "50 mg",       form: "tabletti" },
+      { code: "CIPRALEX_10",      name: "Cipralex 10 mg tabletti",            strength: "10 mg",       form: "tabletti" },
+      { code: "SIMVA_20",         name: "Simvastatin Orion 20 mg tabl.",      strength: "20 mg",       form: "tabletti" },
+      { code: "ATORVA_40",        name: "Atorvastatin Krka 40 mg tabl.",      strength: "40 mg",       form: "tabletti" },
+      { code: "PRIMPERAN_IV",     name: "Primperan 10 mg/ml inj i.v.",        strength: "10 mg/ml",    form: "injektio i.v." },
+      { code: "VOLTAREN_IM",      name: "Voltaren 75 mg inj i.m.",            strength: "75 mg",       form: "injektio i.m." },
+      { code: "KLEXANE_40_SC",    name: "Klexane 40 mg/0,4 ml inj s.c.",      strength: "40 mg/0,4 ml",form: "injektio s.c." }
     ];
 
-    // ---------- TEHTÄVÄ ----------
+    // ---------- TEHTÄVÄT (4 kpl, looginen eteneminen) ----------
 
-    const task = {
-      title: "Tehtävä – Metforem + Panadol (kaksi hyväksyttävää ratkaisua)",
-      description: `Potilaalla on entuudestaan:
+    const TASKS = [
+      {
+        title: "Tehtävä 1 – Tee lääkelista lääkärin tekstin mukaan (päivä 1)",
+        description: `Lääkärin teksti (päivä 1):
 
-• Metforem 500 mg tabletti 1 x 2 (aamu + ilta)
+72-vuotias potilas, jolla tyypin 2 diabetes ja eteisvärinä.
+Jatketaan seuraavaa säännöllistä lääkitystä:
 
-Uusi määräys:
-• Parasetamoli 500 mg suun kautta (p.o.) tarvittaessa kipuun, 1 x 1 (aamu)
+• Metforem 500 mg tabletti 1 x 2 p.o. (aamulla ja illalla)
+• Marevan 3 mg tabletti 1 x 1 p.o. iltaisin
+• Lantus SoloStar 100 IU/ml inj s.c. 20 IU iltaisin
 
-Osastolla käytössä olevat valmisteet:
+Tehtävä:
+1. Tee lääkelista yllä olevan tekstin mukaisesti.
+   – Lisää Metforem, Marevan ja Lantus SoloStar listalle.
+2. Annostus:
+   – Metforem: annostus 1 x 2, AY–Y-jaossa 1 A ja 1 I
+   – Marevan: annostus 1 x 1 iltaisin, AY–Y-jaossa 1 I
+   – Lantus: voit merkitä annostuksen esim. "20 IU s.c. 1 x 1"; AY–Y-jaon ei tarvitse olla täsmällinen tämän tehtävän läpäisyyn.
+3. Kun lista on valmis, tarkista tehtävä. Onnistuneen tarkistuksen jälkeen voit siirtyä seuraavaan määräykseen.`
+      },
+      {
+        title: "Tehtävä 2 – Uusi määräys: parasetamoli (päivä 2)",
+        description: `Lääkärin teksti (päivä 2):
+
+Potilaalla on ollut leikkauksen jälkeen kohtalaista kipua.
+Lisätään tarvittaessa käytettävä parasetamoli:
+
+• Parasetamoli 500 mg p.o. tarvittaessa kipuun, 1 x 1 aamulla
+
+Osastolla käytettävissä:
 • Panadol 1 g tabletti
 • Panadol 500 mg tabletti
 
 Tehtävä:
-1. Varmista, että Metforem on lääkelistalla annoksella 1 x 2 ja jaettuna antoväleihin: 1 A ja 1 I.
+1. Peruslääkitys (Metforem, Marevan, Lantus) säilyy ennallaan ja oikein merkittynä.
 2. Lisää lääkelistalle parasetamoli määräyksen mukaisesti jommalla kummalla tavalla:
-   • Panadol 1 g tabletti, annos: 0,5 x 1, AY–Y-jaossa 0,5 A
+   – Panadol 1 g tabletti
+     • annostus: 0,5 x 1
+     • AY–Y-jako: 0,5 A
      TAI
-   • Panadol 500 mg tabletti, annos: 1 x 1, AY–Y-jaossa 1 A
-3. Molemmat yllä olevat Panadol-vaihtoehdot hyväksytään oikein, kun annos ja antoväli vastaavat määräystä.`,
-      
-      // Lähtötilanne: Metforem rivillä, ilman AY–Y-jakoa
-      initialList: [
-        {
-          medCode: "METFOREM_500",
-          drugName: "Metforem 500 mg tabletti",
-          strength: "500 mg",
-          form: "tabletti",
-          dose: "1 x 2",
-          ay: "", a: "", ap: "", p: "", ip: "", i: "", y: ""
-        }
-      ]
-    };
+   – Panadol 500 mg tabletti
+     • annostus: 1 x 1
+     • AY–Y-jako: 1 A
+3. Tarkista tehtävä. Kun se on oikein, siirry seuraavaan määräykseen.`
+      },
+      {
+        title: "Tehtävä 3 – Uusi määräys: pahoinvointi ja lisäkipu (i.v. + i.m.) (päivä 3)",
+        description: `Lääkärin teksti (päivä 3):
 
-    // ---------- TAVOITE / VALIDOINNIN LOGIIKKA ----------
+Potilaalla on esiintynyt leikkauksen jälkeen pahoinvointia ja ajoittaista kovempaa kipua.
+Lisätään tarvittaessa käytettävät injektiolääkkeet:
 
-    // Metforem pitää olla tällaisena:
+• Primperan 10 mg i.v. tarvittaessa pahoinvointiin, max 3 x vrk
+• Voltaren 75 mg i.m. tarvittaessa kipuun, max 2 x vrk
+
+Osastolla käytettävissä olevat valmisteet:
+• Primperan 10 mg/ml inj i.v.
+• Voltaren 75 mg inj i.m.
+
+Tehtävä:
+1. Peruslääkitys ja parasetamoli ovat edelleen voimassa ja oikein.
+2. Lisää lääkelistalle:
+   – Primperan 10 mg/ml inj i.v. (annostusteksti esim. "1 ml i.v. tarv. max 3 x vrk")
+   – Voltaren 75 mg inj i.m. (annostusteksti esim. "1 amp i.m. tarv. max 2 x vrk")
+3. AY–Y-jakoa ei vaadita tarkasti näille tarvittaessa injektioille, mutta ne tulee löytyä lääkelistalta oikealla nimellä, vahvuudella ja muodolla.`
+      },
+      {
+        title: "Tehtävä 4 – Uusi määräys: tromboosiprofylaksia s.c. (päivä 4)",
+        description: `Lääkärin teksti (päivä 4):
+
+Potilaalla on lisääntynyt laskimotukosriski toipumisvaiheen aikana.
+Lisätään tromboosiprofylaksia:
+
+• Klexane 40 mg s.c. 1 x 1 iltaisin
+
+Osastolla käytettävissä:
+• Klexane 40 mg/0,4 ml inj s.c.
+
+Tehtävä:
+1. Kaikki aiemmat lääkkeet (Metforem, Marevan, Lantus, tarvittaessa Panadol, Primperan, Voltaren) säilyvät oikein.
+2. Lisää lääkelistalle Klexane 40 mg/0,4 ml inj s.c.
+   – annostus: esim. "40 mg/0,4 ml 1 x 1 s.c."
+   – AY–Y-jako: 1 I (ilta)
+3. Tarkista tehtävä. Kun kaikki on oikein, koko harjoitussarja on suoritettu.`
+      }
+    ];
+
+    const INITIAL_LIST = []; // Aloitetaan tyhjällä lääkelistalla
+
+    // ---------- TAVOITE / VALIDOINNIN PARAMETRIT ----------
+
     const targetMetforem = {
       drugName: "metforem 500 mg tabletti",
       strength: "500 mg",
       form: "tabletti",
       dose: "1 x 2",
-      ay: "", a: "1", ap: "", p: "", ip: "", i: "1", y: ""
+      a: "1",
+      i: "1"
     };
 
-    // Hyväksyttävä Panadol-vaihtoehto 1: 1 g, puolikas
+    const targetMarevan = {
+      drugName: "marevan 3 mg tabletti",
+      strength: "3 mg",
+      form: "tabletti",
+      dose: "1 x 1",
+      i: "1"
+    };
+
+    const targetLantus = {
+      drugName: "lantus solostar 100 iu/ml inj s.c.",
+      strength: "100 iu/ml",
+      form: "injektio s.c."
+    };
+
     const targetPanadol1g = {
       drugName: "panadol 1 g tabletti",
       strength: "1 g",
       form: "tabletti",
-      dose: "0,5 x 1",    // käyttäjä voi kirjoittaa 0,5 tai 0.5, normalisoidaan
-      ay: "", a: "0.5", ap: "", p: "", ip: "", i: "", y: ""
+      dose: "0.5 x 1",
+      a: "0.5"
     };
 
-    // Hyväksyttävä Panadol-vaihtoehto 2: 500 mg, kokonainen
     const targetPanadol500 = {
       drugName: "panadol 500 mg tabletti",
       strength: "500 mg",
       form: "tabletti",
       dose: "1 x 1",
-      ay: "", a: "1", ap: "", p: "", ip: "", i: "", y: ""
+      a: "1"
     };
 
     // ---------- SOVELLUSLOGIIKKA ----------
 
-    let meds = JSON.parse(JSON.stringify(task.initialList)); // syväkopio
+    let meds = JSON.parse(JSON.stringify(INITIAL_LIST));
+    let currentTaskIndex = 0;
+    let lastCheckOK = false;
 
+    const taskTitleEl = document.getElementById("task-title");
+    const taskBadgeEl = document.getElementById("task-badge");
     const taskDescriptionEl = document.getElementById("task-description");
+
     const tbody = document.getElementById("med-tbody");
     const addMedBtn = document.getElementById("add-med-btn");
     const checkBtn = document.getElementById("check-btn");
+    const nextBtn = document.getElementById("next-btn");
     const resetBtn = document.getElementById("reset-btn");
     const feedbackEl = document.getElementById("feedback");
     const datalistEl = document.getElementById("medications-list");
@@ -464,7 +545,10 @@ Tehtävä:
     });
 
     function renderTask() {
-      taskDescriptionEl.textContent = task.description;
+      const t = TASKS[currentTaskIndex];
+      taskTitleEl.textContent = t.title;
+      taskDescriptionEl.textContent = t.description;
+      taskBadgeEl.textContent = `Tehtävä ${currentTaskIndex + 1} / ${TASKS.length}`;
     }
 
     function findMedicationByName(name) {
@@ -601,17 +685,17 @@ Tehtävä:
 
     function renderAll() {
       renderMedTable();
+      updateNextButtonVisibility();
     }
 
     function normalizeRow(m) {
-      const doseNorm = (m.dose || "")
+      const doseRaw = (m.dose || "")
         .trim()
         .toLowerCase()
-        .replace(",", ".")
-        .replace(/\s+/g, " ");
+        .replace(",", ".");
+      const doseNorm = doseRaw.replace(/\s+/g, " ");
 
-      const normNum = (v) =>
-        (v || "").trim().replace(",", "."); // desimaalierot pilkku/piste
+      const normNum = (v) => (v || "").trim().replace(",", ".");
 
       return {
         drugName: (m.drugName || "").trim().toLowerCase(),
@@ -628,69 +712,6 @@ Tehtävä:
       };
     }
 
-    function checkAnswer() {
-      const rows = meds
-        .map(ensureScheduleFields)
-        .map(normalizeRow)
-        .filter(r => r.drugName || r.strength || r.dose);
-
-      // 1) Tarkista Metforem
-      const met = rows.find(r => r.drugName === targetMetforem.drugName);
-      if (!met) {
-        showFeedback("Metforem-rivi puuttuu lääkelistalta.", false);
-        return;
-      }
-      const metError =
-        met.strength !== targetMetforem.strength.toLowerCase() ||
-        met.form !== targetMetforem.form.toLowerCase() ||
-        met.dose !== "1 x 2" ||
-        met.a !== targetMetforem.a ||
-        met.i !== targetMetforem.i;
-      if (metError) {
-        showFeedback("Metforem ei ole oikein (annostus tai AY–Y-jako ei täsmää). Vinkki: 1 A ja 1 I.", false);
-        return;
-      }
-
-      // 2) Tarkista, että jokin Panadol-vaihtoehto täsmää
-      const panadols = rows.filter(r =>
-        r.drugName.includes("panadol") && r.form === "tabletti"
-      );
-
-      if (panadols.length === 0) {
-        showFeedback("Panadol/parasetamoli-rivi puuttuu lääkelistalta.", false);
-        return;
-      }
-
-      const ok1g = panadols.some(p =>
-        p.drugName === targetPanadol1g.drugName &&
-        p.strength === targetPanadol1g.strength.toLowerCase() &&
-        p.dose === "0.5 x 1" &&
-        p.a === targetPanadol1g.a
-      );
-
-      const ok500 = panadols.some(p =>
-        p.drugName === targetPanadol500.drugName &&
-        p.strength === targetPanadol500.strength.toLowerCase() &&
-        p.dose === "1 x 1" &&
-        p.a === targetPanadol500.a
-      );
-
-      if (!ok1g && !ok500) {
-        showFeedback(
-          "Panadol ei ole oikein. Hyväksyttävät vaihtoehdot:\n" +
-          "• Panadol 1 g tabletti, annos 0,5 x 1 ja AY–Y-jakona 0,5 A\n" +
-          "  TAI\n" +
-          "• Panadol 500 mg tabletti, annos 1 x 1 ja AY–Y-jakona 1 A.",
-          false
-        );
-        return;
-      }
-
-      // Lisärivejä saa olla, mutta ne eivät vaikuta (voit halutessasi tiukentaa sääntöä)
-
-      showFeedback("Hienoa! Metforem ja Panadol on merkitty oikein – molemmat lääkelista ja AY–Y-jako ovat oikein. ✅", true);
-    }
-
     function showFeedback(message, ok) {
       feedbackEl.textContent = message;
       feedbackEl.classList.remove("ok", "warn");
@@ -698,10 +719,200 @@ Tehtävä:
       feedbackEl.style.display = "block";
     }
 
+    function updateNextButtonVisibility() {
+      if (lastCheckOK && currentTaskIndex < TASKS.length - 1) {
+        nextBtn.style.display = "inline-flex";
+      } else {
+        nextBtn.style.display = "none";
+      }
+    }
+
+    // ---------- YHTEISET TARKISTUSFUNKTIOt ----------
+
+    function checkBaseMeds(rows) {
+      // Metforem
+      const met = rows.find(r => r.drugName === targetMetforem.drugName);
+      if (!met) {
+        showFeedback("Metforem 500 mg tabletti puuttuu lääkelistalta.", false);
+        return false;
+      }
+      if (
+        met.strength !== targetMetforem.strength.toLowerCase() ||
+        met.form !== targetMetforem.form.toLowerCase() ||
+        met.dose !== targetMetforem.dose ||
+        met.a !== targetMetforem.a ||
+        met.i !== targetMetforem.i
+      ) {
+        showFeedback("Metforem ei ole oikein. Sen tulee olla 1 x 2 ja AY–Y-jaossa 1 A ja 1 I.", false);
+        return false;
+      }
+
+      // Marevan
+      const mare = rows.find(r => r.drugName === targetMarevan.drugName);
+      if (!mare) {
+        showFeedback("Marevan 3 mg tabletti puuttuu lääkelistalta.", false);
+        return false;
+      }
+      if (
+        mare.strength !== targetMarevan.strength.toLowerCase() ||
+        mare.form !== targetMarevan.form.toLowerCase() ||
+        mare.dose !== targetMarevan.dose ||
+        mare.i !== targetMarevan.i
+      ) {
+        showFeedback("Marevan ei ole oikein. Sen tulee olla 1 x 1 iltaisin ja AY–Y-jaossa 1 I.", false);
+        return false;
+      }
+
+      // Lantus
+      const lantus = rows.find(r => r.drugName === targetLantus.drugName);
+      if (!lantus) {
+        showFeedback("Lantus SoloStar 100 IU/ml inj s.c. puuttuu lääkelistalta.", false);
+        return false;
+      }
+      if (
+        lantus.strength !== targetLantus.strength.toLowerCase() ||
+        lantus.form !== targetLantus.form.toLowerCase()
+      ) {
+        showFeedback("Lantus ei ole oikein (vahvuus tai muoto ei täsmää).", false);
+        return false;
+      }
+
+      return true;
+    }
+
+    function checkPanadol(rows) {
+      const pans = rows.filter(r =>
+        r.drugName.startsWith("panadol") && r.form === "tabletti"
+      );
+
+      if (pans.length === 0) {
+        showFeedback("Panadol/parasetamoli ei löydy lääkelistalta.", false);
+        return false;
+      }
+
+      const ok1g = pans.some(p =>
+        p.drugName === targetPanadol1g.drugName &&
+        p.strength === targetPanadol1g.strength.toLowerCase() &&
+        p.dose === targetPanadol1g.dose &&
+        p.a === targetPanadol1g.a
+      );
+
+      const ok500 = pans.some(p =>
+        p.drugName === targetPanadol500.drugName &&
+        p.strength === targetPanadol500.strength.toLowerCase() &&
+        p.dose === targetPanadol500.dose &&
+        p.a === targetPanadol500.a
+      );
+
+      if (!ok1g && !ok500) {
+        showFeedback(
+          "Panadol ei ole oikein. Hyväksytään joko:\n" +
+          "• Panadol 1 g tabletti, annos 0,5 x 1 ja AY–Y-jaossa 0,5 A\n" +
+          "  TAI\n" +
+          "• Panadol 500 mg tabletti, annos 1 x 1 ja AY–Y-jaossa 1 A.",
+          false
+        );
+        return false;
+      }
+
+      return true;
+    }
+
+    function checkIVandIM(rows) {
+      const prim = rows.find(r =>
+        r.drugName === "primperan 10 mg/ml inj i.v." &&
+        r.strength === "10 mg/ml" &&
+        r.form === "injektio i.v."
+      );
+      if (!prim) {
+        showFeedback("Primperan 10 mg/ml inj i.v. puuttuu lääkelistalta.", false);
+        return false;
+      }
+
+      const volt = rows.find(r =>
+        r.drugName === "voltaren 75 mg inj i.m." &&
+        r.strength === "75 mg" &&
+        r.form === "injektio i.m."
+      );
+      if (!volt) {
+        showFeedback("Voltaren 75 mg inj i.m. puuttuu lääkelistalta.", false);
+        return false;
+      }
+
+      return true;
+    }
+
+    function checkKlexane(rows) {
+      const klex = rows.find(r =>
+        r.drugName === "klexane 40 mg/0,4 ml inj s.c." &&
+        r.strength === "40 mg/0,4 ml" &&
+        r.form === "injektio s.c."
+      );
+      if (!klex) {
+        showFeedback("Klexane 40 mg/0,4 ml inj s.c. puuttuu lääkelistalta.", false);
+        return false;
+      }
+
+      if (klex.i !== "1") {
+        showFeedback("Klexane ei ole oikein jaettuna. Sen tulee olla AY–Y-jaossa 1 I (ilta).", false);
+        return false;
+      }
+
+      return true;
+    }
+
+    // ---------- TEHTÄVÄKOHTAINEN TARKISTUS ----------
+
+    function checkCurrentTask() {
+      const rows = meds
+        .map(m => ensureScheduleFields(m))
+        .map(m => normalizeRow(m))
+        .filter(r => r.drugName || r.strength || r.dose);
+
+      if (rows.length === 0) {
+        showFeedback("Lääkelista on tyhjä. Lisää lääkkeet lääkärin tekstin mukaisesti.", false);
+        return false;
+      }
+
+      switch (currentTaskIndex) {
+        case 0: { // vain peruslääkitys
+          if (!checkBaseMeds(rows)) return false;
+          showFeedback("Tehtävä 1 suoritettu oikein. Voit siirtyä seuraavaan määräykseen.", true);
+          return true;
+        }
+        case 1: { // peruslääkitys + Panadol
+          if (!checkBaseMeds(rows)) return false;
+          if (!checkPanadol(rows)) return false;
+          showFeedback("Tehtävä 2 suoritettu oikein (peruslääkitys + parasetamoli). Voit siirtyä seuraavaan määräykseen.", true);
+          return true;
+        }
+        case 2: { // peruslääkitys + Panadol + i.v./i.m.
+          if (!checkBaseMeds(rows)) return false;
+          if (!checkPanadol(rows)) return false;
+          if (!checkIVandIM(rows)) return false;
+          showFeedback("Tehtävä 3 suoritettu oikein (lisätty Primperan i.v. ja Voltaren i.m.). Voit siirtyä seuraavaan määräykseen.", true);
+          return true;
+        }
+        case 3: { // kaikki + Klexane
+          if (!checkBaseMeds(rows)) return false;
+          if (!checkPanadol(rows)) return false;
+          if (!checkIVandIM(rows)) return false;
+          if (!checkKlexane(rows)) return false;
+          showFeedback("Tehtävä 4 ja koko harjoitussarja suoritettu oikein. Hienoa työtä! ✅", true);
+          return true;
+        }
+        default:
+          return false;
+      }
+    }
+
+    // ---------- RESET & NAVIGOINTI ----------
+
     function resetList() {
-      meds = JSON.parse(JSON.stringify(task.initialList));
-      renderAll();
+      meds = JSON.parse(JSON.stringify(INITIAL_LIST));
+      lastCheckOK = false;
       feedbackEl.style.display = "none";
+      renderAll();
     }
 
     // ---------- TAPAHTUMAT ----------
@@ -715,11 +926,25 @@ Tehtävä:
         dose: "",
         ay: "", a: "", ap: "", p: "", ip: "", i: "", y: ""
       });
-      renderAll();
+      renderMedTable();
     });
 
     checkBtn.addEventListener("click", () => {
-      checkAnswer();
+      const ok = checkCurrentTask();
+      lastCheckOK = ok;
+      updateNextButtonVisibility();
+    });
+
+    nextBtn.addEventListener("click", () => {
+      if (!lastCheckOK) return;
+      if (currentTaskIndex < TASKS.length - 1) {
+        currentTaskIndex++;
+        lastCheckOK = false;
+        feedbackEl.style.display = "none";
+        renderTask();
+        updateNextButtonVisibility();
+        window.scrollTo({ top: 0, behavior: "smooth" });
+      }
     });
 
     resetBtn.addEventListener("click", () => {
@@ -735,5 +960,4 @@ Tehtävä:
   </script>
 </body>
 </html>
-
 
