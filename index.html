@@ -2,14 +2,14 @@
 <html lang="fi">
 <head>
   <meta charset="UTF-8" />
-  <title>Lääkelistan harjoittelu</title>
+  <title>Lääkelistan harjoittelu – Lifecare-tyyli</title>
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <style>
     :root {
-      --bg: #f4f6f8;
+      --bg: #e5e9f0;
       --card-bg: #ffffff;
-      --border: #d0d4db;
-      --header-bg: #255c9b;
+      --border: #cbd5e1;
+      --header-bg: #204d8c;
       --header-text: #ffffff;
       --row-alt: #f8fafc;
       --accent: #2563eb;
@@ -26,34 +26,36 @@
     body {
       margin: 0;
       padding: 0;
-      background: var(--bg);
+      background: linear-gradient(180deg, #dbe4f0, #eef2f7);
       color: var(--text-main);
     }
 
     .container {
-      max-width: 1100px;
+      max-width: 1200px;
       margin: 0 auto;
       padding: 16px;
     }
 
     h1 {
-      font-size: 1.4rem;
-      margin-bottom: 8px;
+      font-size: 1.35rem;
+      margin-bottom: 4px;
+      letter-spacing: 0.02em;
+      color: #111827;
     }
 
     .subtitle {
-      font-size: 0.9rem;
+      font-size: 0.85rem;
       color: var(--text-muted);
-      margin-bottom: 16px;
+      margin-bottom: 14px;
     }
 
     .card {
       background: var(--card-bg);
-      border-radius: 12px;
-      padding: 16px 18px;
-      box-shadow: 0 10px 25px rgba(15, 23, 42, 0.08);
-      margin-bottom: 16px;
-      border: 1px solid rgba(148, 163, 184, 0.3);
+      border-radius: 10px;
+      padding: 14px 16px;
+      box-shadow: 0 4px 12px rgba(15, 23, 42, 0.12);
+      margin-bottom: 14px;
+      border: 1px solid rgba(148, 163, 184, 0.7);
     }
 
     .card-header {
@@ -61,68 +63,75 @@
       align-items: baseline;
       justify-content: space-between;
       gap: 8px;
-      margin-bottom: 8px;
+      margin-bottom: 6px;
     }
 
     .card-title {
       font-weight: 600;
-      font-size: 0.95rem;
+      font-size: 0.9rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: #1f2937;
     }
 
     .card-badge {
       font-size: 0.7rem;
-      padding: 3px 8px;
+      padding: 2px 8px;
       border-radius: 999px;
       background: #e0f2fe;
       color: #0369a1;
     }
 
     .card-body {
-      font-size: 0.85rem;
+      font-size: 0.8rem;
       color: var(--text-muted);
       white-space: pre-line;
     }
 
     .note-label {
-      font-size: 0.75rem;
+      font-size: 0.72rem;
       font-weight: 600;
-      margin-top: 10px;
-      margin-bottom: 4px;
+      margin-top: 8px;
+      margin-bottom: 3px;
       color: var(--text-muted);
     }
 
     .note-area {
       width: 100%;
       min-height: 60px;
-      border-radius: 8px;
+      border-radius: 6px;
       border: 1px solid var(--border);
-      font-size: 0.8rem;
-      padding: 8px;
+      font-size: 0.78rem;
+      padding: 6px;
       resize: vertical;
+      background: #f9fafb;
     }
 
     .table-card-header {
       display: flex;
       align-items: center;
       justify-content: space-between;
-      margin-bottom: 8px;
+      margin-bottom: 6px;
     }
 
     .table-card-title {
-      font-size: 0.95rem;
+      font-size: 0.9rem;
       font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      color: #111827;
     }
 
     .btn {
       border: none;
       cursor: pointer;
       border-radius: 999px;
-      font-size: 0.8rem;
-      padding: 6px 12px;
+      font-size: 0.78rem;
+      padding: 5px 12px;
       display: inline-flex;
       align-items: center;
       gap: 6px;
-      transition: background 0.15s ease, transform 0.05s ease;
+      transition: background 0.12s ease, transform 0.05s ease;
     }
 
     .btn-primary {
@@ -150,37 +159,41 @@
       border: none;
       color: var(--danger);
       cursor: pointer;
-      padding: 4px;
+      padding: 2px;
       display: inline-flex;
       align-items: center;
       justify-content: center;
       border-radius: 999px;
+      font-size: 0.9rem;
     }
 
     .btn-icon:hover {
-      background: rgba(185, 28, 28, 0.06);
+      background: rgba(185, 28, 28, 0.08);
     }
 
     table {
       width: 100%;
       border-collapse: collapse;
-      font-size: 0.78rem;
-      border-radius: 10px;
+      font-size: 0.72rem;
+      border-radius: 6px;
       overflow: hidden;
       border: 1px solid var(--border);
+      table-layout: fixed;
     }
 
     thead {
-      background: linear-gradient(90deg, #1e3a8a, #2563eb);
+      background: var(--header-bg);
       color: var(--header-text);
     }
 
     thead th {
-      padding: 6px 8px;
+      padding: 4px 6px;
       text-align: left;
       font-weight: 500;
-      border-right: 1px solid rgba(255, 255, 255, 0.1);
+      border-right: 1px solid rgba(255, 255, 255, 0.2);
       white-space: nowrap;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
     }
 
     thead th:last-child {
@@ -189,7 +202,7 @@
     }
 
     tbody tr:nth-child(odd) {
-      background: white;
+      background: #fefefe;
     }
 
     tbody tr:nth-child(even) {
@@ -197,9 +210,12 @@
     }
 
     tbody td {
-      padding: 4px 6px;
-      border-bottom: 1px solid rgba(148, 163, 184, 0.4);
+      padding: 3px 4px;
+      border-bottom: 1px solid rgba(148, 163, 184, 0.5);
       vertical-align: middle;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
     }
 
     tbody tr:last-child td {
@@ -208,27 +224,32 @@
 
     .med-input {
       width: 100%;
-      border-radius: 6px;
-      border: 1px solid rgba(148, 163, 184, 0.8);
-      background: rgba(255, 255, 255, 0.9);
-      font-size: 0.75rem;
-      padding: 3px 5px;
+      border-radius: 4px;
+      border: 1px solid rgba(148, 163, 184, 0.9);
+      background: rgba(255, 255, 255, 0.96);
+      font-size: 0.7rem;
+      padding: 2px 4px;
+    }
+
+    .med-input[readonly] {
+      background: #e5e7eb;
+      color: #4b5563;
     }
 
     .med-select {
       width: 100%;
-      border-radius: 6px;
-      border: 1px solid rgba(148, 163, 184, 0.8);
-      background: rgba(255, 255, 255, 0.95);
-      font-size: 0.75rem;
-      padding: 3px 5px;
+      border-radius: 4px;
+      border: 1px solid rgba(148, 163, 184, 0.9);
+      background: rgba(255, 255, 255, 0.96);
+      font-size: 0.7rem;
+      padding: 2px 4px;
     }
 
     .feedback {
-      margin-top: 10px;
-      font-size: 0.8rem;
-      padding: 8px 10px;
-      border-radius: 8px;
+      margin-top: 8px;
+      font-size: 0.78rem;
+      padding: 6px 8px;
+      border-radius: 6px;
       display: none;
     }
 
@@ -245,14 +266,14 @@
     }
 
     .footer {
-      margin-top: 14px;
+      margin-top: 10px;
       font-size: 0.7rem;
       color: var(--text-muted);
     }
 
-    @media (max-width: 800px) {
+    @media (max-width: 900px) {
       table {
-        font-size: 0.7rem;
+        font-size: 0.72rem;
       }
 
       thead {
@@ -266,7 +287,7 @@
 
       tbody tr {
         margin-bottom: 8px;
-        border-radius: 10px;
+        border-radius: 8px;
         overflow: hidden;
         border: 1px solid rgba(148, 163, 184, 0.6);
       }
@@ -275,13 +296,13 @@
         display: flex;
         justify-content: space-between;
         align-items: center;
-        padding: 6px 8px;
+        padding: 5px 6px;
       }
 
       tbody td::before {
         content: attr(data-label);
         font-weight: 600;
-        margin-right: 8px;
+        margin-right: 6px;
         color: var(--text-muted);
         min-width: 90px;
       }
@@ -294,9 +315,9 @@
 </head>
 <body>
   <div class="container">
-    <h1>Lääkelistan harjoittelu</h1>
+    <h1>Lääkelistan harjoittelu (Lifecare-tyyli)</h1>
     <div class="subtitle">
-      Harjoitusympäristö (ei oikeita potilastietoja). Täytä lääkelista määräyksen mukaisesti ja tarkista vastaus.
+      Harjoitusympäristö – ei oikeita potilastietoja. Täytä lääkelista tehtävänannon mukaan ja tarkista vastaus.
     </div>
 
     <!-- MÄÄRÄYS / TEHTÄVÄNANTO -->
@@ -315,9 +336,9 @@
     <!-- LÄÄKELISTA -->
     <div class="card">
       <div class="table-card-header">
-        <div class="table-card-title">Lääkelista (harjoitus)</div>
+        <div class="table-card-title">Lääkelista</div>
         <button class="btn btn-ghost" id="add-med-btn">
-          <span>＋ Lisää lääke</span>
+          ＋ Lisää lääkerivi
         </button>
       </div>
 
@@ -325,12 +346,12 @@
         <table id="med-table">
           <thead>
             <tr>
-              <th>Lääke</th>
-              <th>Vahvuus</th>
-              <th>Antotapa</th>
-              <th>Annostus</th>
-              <th>Tila</th>
-              <th style="width:40px;">&nbsp;</th>
+              <th style="width: 26%;">Lääke (kauppanimi)</th>
+              <th style="width: 13%;">Vahvuus</th>
+              <th style="width: 11%;">Lääkemuoto</th>
+              <th style="width: 25%;">Annostus (esim. 1 x 1, 0,5 x 1)</th>
+              <th style="width: 13%;">Tila</th>
+              <th style="width: 6%;">&nbsp;</th>
             </tr>
           </thead>
           <tbody id="med-tbody">
@@ -339,7 +360,7 @@
         </table>
       </div>
 
-      <div style="margin-top: 12px; display: flex; gap: 8px; flex-wrap: wrap;">
+      <div style="margin-top: 10px; display: flex; gap: 8px; flex-wrap: wrap;">
         <button class="btn btn-primary" id="check-btn">
           ✅ Tarkista vastaus
         </button>
@@ -351,45 +372,75 @@
       <div id="feedback" class="feedback"></div>
 
       <div class="footer">
-        Vinkki: muokkaa tehtävänantoa, lähtölistaa ja malliratkaisua suoraan index.html-tiedoston <code>&lt;script&gt;</code>-osasta.
+        Vinkki: muokkaa tehtävänantoa, lähtölistaa, malliratkaisua ja lääkekatalogia suoraan index.html-tiedoston <code>&lt;script&gt;</code>-osasta.
       </div>
     </div>
   </div>
 
+  <!-- LÄÄKELUETTELO (HAKU) -->
+  <datalist id="medications-list">
+    <!-- Täytetään JavaScriptillä MEDICATIONS-taulukosta -->
+  </datalist>
+
   <script>
-    // ---------- TEHTÄVÄ & DATA (MUOKKAAT NÄITÄ) ----------
+    // ---------- LÄÄKEKATALOGI (virallisia kauppanimiä) -----------
+
+    const MEDICATIONS = [
+      { code: "PANADOL_1G_TAB",  name: "Panadol 1 g tabletti",           strength: "1 g",   form: "tabletti" },
+      { code: "PANADOL_500_TAB", name: "Panadol 500 mg tabletti",        strength: "500 mg",form: "tabletti" },
+      { code: "BURANA_400_TAB",  name: "Burana 400 mg tabletti",         strength: "400 mg",form: "tabletti" },
+      { code: "MAREVAN_3_TAB",   name: "Marevan 3 mg tabletti",          strength: "3 mg",  form: "tabletti" },
+      { code: "METFOREM_500",    name: "Metforem 500 mg tabletti",       strength: "500 mg",form: "tabletti" },
+      { code: "LANTUS_SOLO",     name: "Lantus SoloStar 100 IU/ml inj",  strength: "100 IU/ml", form: "injektio" },
+      { code: "SERTRALIN_50",    name: "Sertralin Orion 50 mg tabletti", strength: "50 mg", form: "tabletti" },
+      { code: "CIPRALEX_10",     name: "Cipralex 10 mg tabletti",        strength: "10 mg", form: "tabletti" },
+      { code: "SIMVA_20",        name: "Simvastatin Orion 20 mg tabl.",  strength: "20 mg", form: "tabletti" },
+      { code: "ATORVA_40",       name: "Atorvastatin Krka 40 mg tabl.",  strength: "40 mg", form: "tabletti" }
+    ];
+
+    // ---------- TEHTÄVÄ & HARJOITUSDATA (muokattavissa) ----------
 
     const task = {
-      title: "Tehtävä 1 – Uuden kipulääkkeen aloitus",
-      description: `Potilaalla on entuudestaan Lääke A 500 mg 1 x 3 p.o.
+      title: "Tehtävä 1 – Panadol 500 mg, saatavilla Panadol 1 g valmiste",
+      description: `Potilaalle on määrätty parasetamolia 500 mg suun kautta (p.o.) tarvittaessa kipuun.
+
+Osastolla käytössä oleva valmiste on:
+• Panadol 1 g tabletti
 
 Tehtävä:
-Lisää lääkelistalle uusi kipulääke:
-• Lääke B 10 mg p.o.
-• Annostus 1 x 1 iltaisin
-• Tila: Voimassa`,
+1. Lisää lääkelistalle Panadol 1 g tabletti.
+2. Määritä annostus vastaamaan määräystä 500 mg:
+   → annostus: 0,5 x 1 (puolet tabletista kerralla)
+3. Tila: Voimassa.
+
+Huomio:
+• Vahvuus tulee automaattisesti, kun valitset valmistetta vastaavan nimen.
+• Annostuskenttään kirjoitat itse fraktion (esim. 0,5 x 1).`,
       initialList: [
         {
-          drug: "Lääke A",
+          medCode: "METFOREM_500",
+          drugName: "Metforem 500 mg tabletti",
           strength: "500 mg",
-          route: "p.o.",
-          dose: "1 x 3",
+          form: "tabletti",
+          dose: "1 x 2",
           status: "Voimassa"
         }
       ],
       targetList: [
         {
-          drug: "Lääke A",
+          medCode: "METFOREM_500",
+          drugName: "Metforem 500 mg tabletti",
           strength: "500 mg",
-          route: "p.o.",
-          dose: "1 x 3",
+          form: "tabletti",
+          dose: "1 x 2",
           status: "Voimassa"
         },
         {
-          drug: "Lääke B",
-          strength: "10 mg",
-          route: "p.o.",
-          dose: "1 x 1 iltaisin",
+          medCode: "PANADOL_1G_TAB",
+          drugName: "Panadol 1 g tabletti",
+          strength: "1 g",
+          form: "tabletti",
+          dose: "0,5 x 1",
           status: "Voimassa"
         }
       ]
@@ -405,9 +456,23 @@ Lisää lääkelistalle uusi kipulääke:
     const checkBtn = document.getElementById("check-btn");
     const resetBtn = document.getElementById("reset-btn");
     const feedbackEl = document.getElementById("feedback");
+    const datalistEl = document.getElementById("medications-list");
+
+    // Täytä datalist lääkkeillä
+    MEDICATIONS.forEach(med => {
+      const opt = document.createElement("option");
+      opt.value = med.name;
+      datalistEl.appendChild(opt);
+    });
 
     function renderTask() {
+      document.querySelector("#task-card .card-title").textContent = "Määräys / tehtävänanto";
       taskDescriptionEl.textContent = task.description;
+    }
+
+    function findMedicationByName(name) {
+      const trimmed = (name || "").trim().toLowerCase();
+      return MEDICATIONS.find(m => m.name.toLowerCase() === trimmed) || null;
     }
 
     function renderTable() {
@@ -415,33 +480,89 @@ Lisää lääkelistalle uusi kipulääke:
       meds.forEach((med, index) => {
         const tr = document.createElement("tr");
 
-        const createCell = (label, value, onInput) => {
+        const createInputCell = (label, value, onInput, options = {}) => {
           const td = document.createElement("td");
           td.setAttribute("data-label", label);
           const input = document.createElement("input");
           input.className = "med-input";
           input.value = value || "";
+          if (options.readonly) {
+            input.readOnly = true;
+          }
+          if (options.datalist) {
+            input.setAttribute("list", options.datalist);
+          }
           input.addEventListener("input", (e) => {
             onInput(e.target.value);
           });
+          if (options.onBlur) {
+            input.addEventListener("blur", (e) => {
+              options.onBlur(e.target.value);
+            });
+          }
           td.appendChild(input);
           return td;
         };
 
-        tr.appendChild(
-          createCell("Lääke", med.drug, (val) => (meds[index].drug = val))
+        // LÄÄKENIMI (hakukenttä + datalist)
+        const drugCell = createInputCell(
+          "Lääke",
+          med.drugName || "",
+          (val) => {
+            meds[index].drugName = val;
+          },
+          {
+            datalist: "medications-list",
+            onBlur: (val) => {
+              const match = findMedicationByName(val);
+              if (match) {
+                meds[index].medCode = match.code;
+                meds[index].drugName = match.name;
+                meds[index].strength = match.strength;
+                meds[index].form = match.form;
+                renderTable(); // päivitetään vahvuus + muoto
+              } else {
+                meds[index].medCode = null;
+              }
+            }
+          }
         );
-        tr.appendChild(
-          createCell("Vahvuus", med.strength, (val) => (meds[index].strength = val))
-        );
-        tr.appendChild(
-          createCell("Antotapa", med.route, (val) => (meds[index].route = val))
-        );
-        tr.appendChild(
-          createCell("Annostus", med.dose, (val) => (meds[index].dose = val))
-        );
+        tr.appendChild(drugCell);
 
-        // Tila (select)
+        // VAHVUUS – automaattinen, jos medCode tunnetaan
+        const isKnown = !!med.medCode;
+        const strengthCell = createInputCell(
+          "Vahvuus",
+          med.strength || "",
+          (val) => {
+            if (!isKnown) meds[index].strength = val;
+          },
+          { readonly: isKnown }
+        );
+        tr.appendChild(strengthCell);
+
+        // MUOTO – automaattinen, jos tunnettu lääke
+        const formCell = createInputCell(
+          "Lääkemuoto",
+          med.form || "",
+          (val) => {
+            if (!isKnown) meds[index].form = val;
+          },
+          { readonly: isKnown }
+        );
+        tr.appendChild(formCell);
+
+        // ANNOSTUS – käyttäjä syöttää myös fraktion, esim. 0,5 x 1
+        const doseCell = createInputCell(
+          "Annostus",
+          med.dose || "",
+          (val) => {
+            meds[index].dose = val;
+          }
+        );
+        tr.appendChild(doseCell);
+
+        // TILA – select
         const tdStatus = document.createElement("td");
         tdStatus.setAttribute("data-label", "Tila");
         const select = document.createElement("select");
@@ -450,8 +571,7 @@ Lisää lääkelistalle uusi kipulääke:
           const o = document.createElement("option");
           o.value = opt;
           o.textContent = opt;
-          if (med.status === opt) o.selected = true;
-          select.appendChild(o);
+          if ((med.status || "") === opt) o.selected = true;
         });
         select.addEventListener("change", (e) => {
           meds[index].status = e.target.value;
@@ -459,10 +579,10 @@ Lisää lääkelistalle uusi kipulääke:
         tdStatus.appendChild(select);
         tr.appendChild(tdStatus);
 
-        // Poisto
+        // POISTO
         const tdDelete = document.createElement("td");
-        tdDelete.style.textAlign = "center";
         tdDelete.setAttribute("data-label", "Poista");
+        tdDelete.style.textAlign = "center";
         const delBtn = document.createElement("button");
         delBtn.className = "btn-icon";
         delBtn.innerHTML = "🗑";
@@ -481,14 +601,14 @@ Lisää lääkelistalle uusi kipulääke:
     function normalizeList(list) {
       return list
         .map((m) => ({
-          drug: (m.drug || "").trim().toLowerCase(),
+          drugName: (m.drugName || "").trim().toLowerCase(),
           strength: (m.strength || "").trim().toLowerCase(),
-          route: (m.route || "").trim().toLowerCase(),
+          form: (m.form || "").trim().toLowerCase(),
           dose: (m.dose || "").trim().toLowerCase(),
           status: (m.status || "").trim().toLowerCase()
         }))
-        .filter((m) => m.drug || m.strength || m.route || m.dose) // tyhjät rivit pois
-        .sort((a, b) => a.drug.localeCompare(b.drug));
+        .filter((m) => m.drugName || m.strength || m.dose) // tyhjät rivit pois
+        .sort((a, b) => a.drugName.localeCompare(b.drugName));
     }
 
     function checkAnswer() {
@@ -497,7 +617,7 @@ Lisää lääkelistalle uusi kipulääke:
 
       if (user.length !== target.length) {
         showFeedback(
-          "Lääkkeiden lukumäärä ei täsmää malliin.",
+          "Lääkkeiden lukumäärä ei täsmää malliratkaisuun.",
           false
         );
         return;
@@ -508,14 +628,17 @@ Lisää lääkelistalle uusi kipulääke:
         const t = target[i];
 
         if (
-          u.drug !== t.drug ||
+          u.drugName !== t.drugName ||
           u.strength !== t.strength ||
-          u.route !== t.route ||
+          u.form !== t.form ||
           u.dose !== t.dose ||
           u.status !== t.status
         ) {
           showFeedback(
-            `Rivillä ${i + 1} on eroja (lääke / vahvuus / antotapa / annostus / tila ei täsmää).`,
+            `Rivillä ${i + 1} on eroja (lääke / vahvuus / muoto / annostus / tila).` +
+            (t.drugName.includes("panadol 1 g") && t.dose === "0,5 x 1"
+              ? " Vinkki: muista, että 500 mg = 0,5 x 1 g tabletti."
+              : ""),
             false
           );
           return;
@@ -542,9 +665,10 @@ Lisää lääkelistalle uusi kipulääke:
 
     addMedBtn.addEventListener("click", () => {
       meds.push({
-        drug: "",
+        medCode: null,
+        drugName: "",
         strength: "",
-        route: "",
+        form: "",
         dose: "",
         status: "Voimassa"
       });
