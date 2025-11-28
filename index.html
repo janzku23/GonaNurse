@@ -1179,35 +1179,49 @@ Klexane on lopetettu, Primaspan on jälleen käytössä, ja muu aiempi lääkity
       return true;
     }
 
-    function checkPanadol(rows) {
-      const pans = rows.filter(r =>
-        r.drugName.startsWith("panadol") && r.form === "tabletti"
-      );
+function checkPanadol(rows) {
+  const pans = rows.filter(r =>
+    r.drugName.startsWith("panadol") && r.form === "tabletti"
+  );
 
-      if (pans.length === 0) {
-        showFeedback("Panadol/parasetamoli ei löydy lääkelistalta.", false);
-        return false;
-      }
+  if (pans.length === 0) {
+    showFeedback("Panadol/parasetamoli ei löydy lääkelistalta.", false);
+    return false;
+  }
 
-      const ok = pans.some(p =>
-        (p.strength === "1 g" || p.strength === "500 mg") &&
-        p.dose === normDoseString("1 x 1-3") &&
-        p.type === "Tarvittava" &&
-        p.route === "p.o." &&
-        scheduleIsEmpty(p)
-      );
+  const ok = pans.some(p => {
+    if (p.type !== "Tarvittava" || p.route !== "p.o." || !scheduleIsEmpty(p)) {
+      return false;
+    }
 
-      if (!ok) {
-        showFeedback(
-          "Parasetamoli ei ole oikein. Hyväksytään:\n" +
-          "• Panadol 1 g TAI Panadol 500 mg tabletti\n" +
-          "• Tyyppi Tarvittava, antoreitti p.o.\n" +
-          "• Annostus 1 x 1–3\n" +
-          "• Y–IY-aikaruutujen tulee olla tyhjät.",
-          false
-        );
-        return false;
-      }
+    const doseNorm = normDoseString(p.dose);
+
+    const variant500 =
+      p.strength === "500 mg" &&
+      doseNorm === normDoseString("1 x 1-3");
+
+    const variant1gHalf =
+      p.strength === "1 g" &&
+      doseNorm === normDoseString("0.5 x 1-3"); // "0,5 x 1–3" toimii myös, normDoseString muuttaa pilkun pisteeksi
+
+    return variant500 || variant1gHalf;
+  });
+
+  if (!ok) {
+    showFeedback(
+      "Parasetamoli ei ole oikein. Hyväksytään:\n" +
+      "• Panadol 500 mg tabletti, annos 1 x 1–3 TAI\n" +
+      "• Panadol 1 g tabletti, annos 0,5 x 1–3\n" +
+      "• Tyyppi Tarvittava, antoreitti p.o.\n" +
+      "• Y–IY-aikaruutujen tulee olla tyhjät.",
+      false
+    );
+    return false;
+  }
+
+  return true;
+}
+
 
       return true;
     }
