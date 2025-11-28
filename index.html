@@ -448,7 +448,7 @@
       { code: "ASPIRIN_100",      name: "Aspirin Cardio 100 mg tabletti",     strength: "100 mg",          form: "tabletti" },
 
       { code: "PRIMPERAN_IV",     name: "Primperan 10 mg/ml.",        strength: "10 mg/ml",        form: "injektio" },
-      { code: "VOLTAREN_IM",      name: "Voltaren 75 mg inj..",            strength: "75 mg",           form: "injektio" },
+      { code: "VOLTAREN_IM",      name: "Voltaren 75 mg inj.",            strength: "75 mg",           form: "injektio" },
 
       { code: "KLEXANE_40_SC",    name: "Klexane 40 mg/0,4 ml.",      strength: "40 mg/0,4 ml",    form: "injektio" },
 
@@ -1236,7 +1236,7 @@ Klexane on lopetettu, Primaspan on jälleen käytössä, ja muu aiempi lääkity
       }
 
       const volt = rows.find(r =>
-        r.drugName === "voltaren 75 mg inj i.m." &&
+        r.drugName === "voltaren 75 mg." &&
         r.strength === "75 mg" &&
         r.form === "injektio"
       );
