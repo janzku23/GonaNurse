@@ -191,6 +191,14 @@
       background: var(--row-alt);
     }
 
+    tbody tr.row-ok {
+      background: #dcfce7 !important;
+    }
+
+    tbody tr.row-error {
+      background: #fee2e2 !important;
+    }
+
     tbody td {
       padding: 3px 4px;
       border-bottom: 1px solid rgba(148, 163, 184, 0.5);
@@ -243,9 +251,9 @@
     }
 
     .feedback.warn {
-      background: #fef9c3;
-      color: #854d0e;
-      border: 1px solid #facc15;
+      background: #fee2e2;
+      color: #b91c1c;
+      border: 1px solid #fecaca;
     }
 
     .footer {
@@ -361,9 +369,6 @@
         <button class="btn btn-ghost" id="next-btn" style="display:none;">
           Seuraava päivä ▶︎
         </button>
-        <button class="btn btn-ghost" id="reset-btn">
-          Palauta alkuperäinen tila
-        </button>
       </div>
 
       <div id="feedback" class="feedback"></div>
@@ -374,66 +379,75 @@
   <datalist id="medications-list"></datalist>
 
   <script>
-    // ---------- Apufunktio annoksen normalisointiin ----------
-
     function normDoseString(s) {
       return (s || "")
         .toLowerCase()
         .replace(",", ".")
-        .replace(/\s*/g, ""); // "1x1", "0.5x1-3"
+        .replace(/\s*/g, "");
     }
 
-    // ---------- LÄÄKEKATALOGI ----------
+    // ---------- LÄÄKEKATALOGI (LAAJENNETTU) ----------
 
     const MEDICATIONS = [
-      { code: "PANADOL_1G_TAB",   name: "Panadol 1 g tabletti",               strength: "1 g",         form: "tabletti" },
-      { code: "PANADOL_500_TAB",  name: "Panadol 500 mg tabletti",            strength: "500 mg",      form: "tabletti" },
-      { code: "BURANA_400_TAB",   name: "Burana 400 mg tabletti",             strength: "400 mg",      form: "tabletti" },
-      { code: "MAREVAN_3_TAB",    name: "Marevan 3 mg tabletti",              strength: "3 mg",        form: "tabletti" },
-      { code: "METFOREM_500",     name: "Metforem 500 mg tabletti",           strength: "500 mg",      form: "tabletti" },
-      { code: "LANTUS_SOLO",      name: "Lantus SoloStar 100 IU/ml inj s.c.", strength: "100 IU/ml",   form: "injektio" },
-      { code: "SERTRALIN_50",     name: "Sertralin Orion 50 mg tabletti",     strength: "50 mg",       form: "tabletti" },
-      { code: "CIPRALEX_10",      name: "Cipralex 10 mg tabletti",            strength: "10 mg",       form: "tabletti" },
-      { code: "SIMVA_20",         name: "Simvastatin Orion 20 mg tabl.",      strength: "20 mg",       form: "tabletti" },
-      { code: "ATORVA_40",        name: "Atorvastatin Krka 40 mg tabl.",      strength: "40 mg",       form: "tabletti" },
-      { code: "PRIMPERAN_IV",     name: "Primperan 10 mg/ml inj i.v.",        strength: "10 mg/ml",    form: "injektio" },
-      { code: "VOLTAREN_IM",      name: "Voltaren 75 mg inj i.m.",            strength: "75 mg",       form: "injektio" },
-      { code: "KLEXANE_40_SC",    name: "Klexane 40 mg/0,4 ml inj s.c.",      strength: "40 mg/0,4 ml",form: "injektio" },
-      { code: "CEFUR_500_TAB",    name: "Cefuroxim 500 mg tabletti",          strength: "500 mg",      form: "tabletti" },
-      { code: "PLAVIX_75_TAB",    name: "Plavix 75 mg tabletti",              strength: "75 mg",       form: "tabletti" }
+      { code: "PANADOL_1G_TAB",   name: "Panadol 1 g tabletti",               strength: "1 g",             form: "tabletti" },
+      { code: "PANADOL_500_TAB",  name: "Panadol 500 mg tabletti",            strength: "500 mg",          form: "tabletti" },
+      { code: "PARATABS_500_TAB", name: "Paratabs 500 mg tabletti",           strength: "500 mg",          form: "tabletti" },
+      { code: "PANACOD_TAB",      name: "Panacod 500 mg/30 mg tabletti",      strength: "500 mg/30 mg",    form: "tabletti" },
+
+      { code: "BURANA_400_TAB",   name: "Burana 400 mg tabletti",             strength: "400 mg",          form: "tabletti" },
+
+      { code: "MAREVAN_3_TAB",    name: "Marevan 3 mg tabletti",              strength: "3 mg",            form: "tabletti" },
+      { code: "METFOREM_500",     name: "Metforem 500 mg tabletti",           strength: "500 mg",          form: "tabletti" },
+
+      { code: "LANTUS_SOLO",      name: "Lantus SoloStar 100 IU/ml inj s.c.", strength: "100 IU/ml",       form: "injektio" },
+
+      { code: "SERTRALIN_50",     name: "Sertralin Orion 50 mg tabletti",     strength: "50 mg",           form: "tabletti" },
+      { code: "CIPRALEX_10",      name: "Cipralex 10 mg tabletti",            strength: "10 mg",           form: "tabletti" },
+
+      { code: "SIMVA_20",         name: "Simvastatin Orion 20 mg tabl.",      strength: "20 mg",           form: "tabletti" },
+      { code: "SIMVA_40",         name: "Simvastatin Orion 40 mg tabl.",      strength: "40 mg",           form: "tabletti" },
+      { code: "ATORVA_40",        name: "Atorvastatin Krka 40 mg tabl.",      strength: "40 mg",           form: "tabletti" },
+
+      { code: "PRIMPERAN_IV",     name: "Primperan 10 mg/ml inj i.v.",        strength: "10 mg/ml",        form: "injektio" },
+      { code: "VOLTAREN_IM",      name: "Voltaren 75 mg inj i.m.",            strength: "75 mg",           form: "injektio" },
+
+      { code: "KLEXANE_40_SC",    name: "Klexane 40 mg/0,4 ml inj s.c.",      strength: "40 mg/0,4 ml",    form: "injektio" },
+
+      { code: "CEFUR_500_TAB",    name: "Cefuroxim 500 mg tabletti",          strength: "500 mg",          form: "tabletti" },
+      { code: "CEFUR_500_IV",     name: "Cefuroxim 500 mg inj i.v.",          strength: "500 mg",          form: "injektio" },
+
+      { code: "PLAVIX_75_TAB",    name: "Plavix 75 mg tabletti",              strength: "75 mg",           form: "tabletti" }
     ];
 
     // ---------- PÄIVÄKOHTAISET TILANTEET ----------
 
     const TASKS = [
       {
-        title: "Päivä 1 – Osastolle tulo ja peruslääkitys",
-        description: `72-vuotias potilas, jolla taustalla tyypin 2 diabetes, eteisvärinä ja verenpainetauti. 
-Osastolla verenpaine- ja verensokeriseuranta, laitetaan myös telemetriaseuranta.
+        title: "Päivä 1 – Osastolle tulo, peruslääkitys ja lopetukset",
+        description: `72-vuotias potilas, jolla taustalla tyypin 2 diabetes, eteisvärinä ja verenpainetauti. Osastolla verenpaine- ja verensokeriseuranta, laitetaan myös telemetriaseuranta.
 
 Siirtyy nyt vuodeosastolle. Osastolääkityksenä jatketaan:
-
-• Metforem 500 mg tabletti 1 x 2 p.o. (aamu ja ilta)
-• Marevan 3 mg tabletti 1 x 1 p.o. (ilta)
-• Lantus SoloStar 100 IU/ml inj s.c. 20 IU iltaisin
-• Simvastatin Orion 20 mg tabl. 1 x 1 p.o. iltaisin
+– Metforem 500 mg tabletti 1 x 2 p.o. (aamu ja ilta)
+– Marevan 3 mg tabletti 1 x 1 p.o. (ilta)
+– Lantus SoloStar 100 IU/ml inj s.c. 20 IU iltaisin
+– Simvastatin Orion 20 mg tabl. nostetaan annokseen 40 mg iltaisin (joko 20 mg 2 x 1 tai Simvastatin Orion 40 mg 1 x 1)
 
 Lopetetaan Plavix 75 mg tabletti ja Burana 400 mg tabletti.`
       },
       {
-        title: "Päivä 2 – Lisäkipu ja parasetamoli",
-        description: `Seuraavana päivänä potilaalla on leikkauksen jälkeen kohtalaista haavakipua. 
-Paikallisoireet rauhalliset, mutta potilas kokee liikkeellelähdön kivuliaaksi.
+        title: "Päivä 2 – Kipu, tromboosiprofylaksia ja parasetamoli",
+        description: `Seuraavana päivänä potilaalla on leikkauksen jälkeen kohtalaista haavakipua. Liikkuminen on vähäistä ja potilas tarvitsee runsaasti apua vuoteesta ylös.
 
-Lisätään tarvittaessa käytettävä parasetamoli:
+Lisätään tromboosiprofylaksia ja tarvittaessa kipulääkitys:
 
-• Parasetamoli 500 mg p.o. tarvittaessa kipuun, 1 x 1 (aamu)
+– Klexane 40 mg s.c. 1 x 1 iltaisin
+– Parasetamoli 500 mg p.o. tarvittaessa kipuun, 1 x 1 (aamu)
 
 Osastolla käytössä:
-• Panadol 1 g tabletti
-• Panadol 500 mg tabletti
+– Panadol 1 g tabletti
+– Panadol 500 mg tabletti
 
-Muu säännöllinen lääkitys jatkuu ennallaan.`
+Muu säännöllinen lääkitys jatkuu ennallaan (mukaan lukien suurennettu simvastannos).`
       },
       {
         title: "Päivä 3 – Pahoinvointi ja lisäkipu (i.v. + i.m.)",
@@ -441,37 +455,34 @@ Muu säännöllinen lääkitys jatkuu ennallaan.`
 
 Lisätään tarvittaessa annettavat injektiolääkkeet:
 
-• Primperan 10 mg i.v. tarvittaessa pahoinvointiin, 1 x 1–3
-• Voltaren 75 mg i.m. tarvittaessa kipuun, 1 x 1–2
+– Primperan 10 mg i.v. tarvittaessa pahoinvointiin, 1 x 1–3
+– Voltaren 75 mg i.m. tarvittaessa kipuun, 1 x 1–2
 
 Osastolla käytettävissä olevat valmisteet:
-• Primperan 10 mg/ml inj i.v.
-• Voltaren 75 mg inj i.m.
+– Primperan 10 mg/ml inj i.v.
+– Voltaren 75 mg inj i.m.
 
-Peruslääkitys ja tarvittaessa parasetamoli jatkuvat ennallaan.`
+Peruslääkitys, Klexane ja tarvittaessa parasetamoli jatkuvat ennallaan.`
       },
       {
-        title: "Päivä 4 – Tromboosiprofylaksia s.c.",
-        description: `Potilas toipuu, mutta liikkuminen on vielä vähäistä ja leikkausalueella on turvotusta. 
-Laskimotukosriski arvioidaan suurentuneeksi.
+        title: "Päivä 4 – Klexane lopetetaan",
+        description: `Potilas on kuntoutunut, kävelee osastolla ja siirtyy vuoteesta tuoliin itsenäisesti. Laskimotukosriski arvioidaan pienentyneeksi.
 
-Lisätään tromboosiprofylaksia:
+Klexane 40 mg s.c. 1 x 1 iltaisin lopetetaan.
 
-• Klexane 40 mg s.c. 1 x 1 iltaisin
-
-Osastolla käytettävissä:
-• Klexane 40 mg/0,4 ml inj s.c.
-
-Muut osastolääkitykset ja tarvittaessa lääkitykset jatkuvat entisellään.`
+Muu lääkitys (Metforem, Marevan, Lantus, suurennettu simvastatiiniannos sekä tarvittaessa parasetamoli, Primperan ja Voltaren) jatkuu ennallaan.`
       },
       {
         title: "Päivä 5 – Antibioottihoito (cefuroxim-kuuri, 12.12.2025–18.12.2025)",
-        description: `Tänään on 12.12.2025. Potilaalle on kehittynyt hengitystieinfektioon sopiva kliininen kuva, CRP ja tulehdusarvot koholla. 
+        description: `Tänään on 12.12.2025. Potilaalle on kehittynyt hengitystieinfektioon sopiva kliininen kuva, CRP ja tulehdusarvot koholla.
+
 Aloitetaan määräaikainen antibioottihoito:
 
-• Cefuroxim 500 mg tabletti p.o. 1 x 2, 7 vuorokauden kuuri tästä aamusta lähtien.
+– Cefuroxim 500 mg tabletti p.o. 1 x 2, 7 vuorokauden kuuri tästä aamusta lähtien.
 
 Kuurin kesto: 7 vrk (12.12.2025–18.12.2025).
+
+Huom: Osastolla on saatavilla myös Cefuroxim 500 mg inj i.v., mutta tässä käytetään suun kautta otettavaa tablettimuotoa.
 
 Muu aiempi lääkitys jatkuu, ellei erikseen ole päätetty lopettaa.`
       }
@@ -622,7 +633,6 @@ Muu aiempi lääkitys jatkuu, ellei erikseen ole päätetty lopettaa.`
     const addMedBtn = document.getElementById("add-med-btn");
     const checkBtn = document.getElementById("check-btn");
     const nextBtn = document.getElementById("next-btn");
-    const resetBtn = document.getElementById("reset-btn");
     const feedbackEl = document.getElementById("feedback");
     const datalistEl = document.getElementById("medications-list");
 
@@ -661,6 +671,7 @@ Muu aiempi lääkitys jatkuu, ellei erikseen ole päätetty lopettaa.`
       meds.forEach((med, index) => {
         ensureScheduleFields(med);
         const tr = document.createElement("tr");
+        tr.dataset.index = index;
 
         const createInputCell = (label, value, onInput, options = {}) => {
           const td = document.createElement("td");
@@ -1005,18 +1016,50 @@ Muu aiempi lääkitys jatkuu, ellei erikseen ole päätetty lopettaa.`
       return true;
     }
 
-    function checkTask1(rows) {
-      if (!checkBaseMeds(rows)) return false;
+    function checkStatinUp(rows) {
+      const simva20rows = rows.filter(r => r.drugName === "simvastatin orion 20 mg tabl.");
+      const simva40rows = rows.filter(r => r.drugName === "simvastatin orion 40 mg tabl.");
 
+      const hasOld20 = simva20rows.some(r => r.dose === normDoseString("1 x 1"));
+
+      const ok20up = simva20rows.some(r =>
+        (r.dose === normDoseString("2 x 1") || r.dose === normDoseString("1 x 2")) &&
+        r.type === "Jatkuva" &&
+        r.route === "p.o."
+      );
+
+      const ok40 = simva40rows.some(r =>
+        r.dose === normDoseString("1 x 1") &&
+        r.type === "Jatkuva" &&
+        r.route === "p.o."
+      );
+
+      if (!ok20up && !ok40) {
+        showFeedback("Simvastatiin annosmuutos ei ole oikein. Sen tulee olla joko Simvastatin Orion 20 mg 2 x 1 / 1 x 2 TAI Simvastatin Orion 40 mg 1 x 1, tyypiltään Jatkuva ja antoreitillä p.o.", false);
+        return false;
+      }
+      if (hasOld20) {
+        showFeedback("Simvastatin Orion 20 mg 1 x 1 ei saa enää olla listalla (annos on nostettu). Muuta annos tai vaihda 40 mg valmisteeseen.", false);
+        return false;
+      }
+      return true;
+    }
+
+    function checkNoPlavixBurana(rows) {
       const plavix = rows.find(r => r.drugName === "plavix 75 mg tabletti");
       const burana = rows.find(r => r.drugName === "burana 400 mg tabletti");
-
       if (plavix || burana) {
         showFeedback("Plavix 75 mg ja Burana 400 mg on määrätty lopetettaviksi – niiden ei tule enää olla lääkelistalla.", false);
         return false;
       }
+      return true;
+    }
 
-      showFeedback("Päivän 1 tilanne merkitty oikein: peruslääkitys jatkuu ja Plavix sekä Burana on lopetettu.", true);
+    function checkTask1(rows) {
+      if (!checkBaseMeds(rows)) return false;
+      if (!checkStatinUp(rows)) return false;
+      if (!checkNoPlavixBurana(rows)) return false;
+      showFeedback("Päivän 1 tilanne merkitty oikein: peruslääkitys, simvastatiinin annosmuutos ja Plavixin sekä Buranan lopetus.", true);
       return true;
     }
 
@@ -1110,14 +1153,14 @@ Muu aiempi lääkitys jatkuu, ellei erikseen ole päätetty lopettaa.`
       return true;
     }
 
-    function checkKlexane(rows) {
+    function checkKlexanePresent(rows) {
       const klex = rows.find(r =>
         r.drugName === "klexane 40 mg/0,4 ml inj s.c." &&
         r.strength === "40 mg/0,4 ml" &&
         r.form === "injektio"
       );
       if (!klex) {
-        showFeedback("Klexane 40 mg/0,4 ml inj s.c. puuttuu lääkelistalta.", false);
+        showFeedback("Klexane 40 mg/0,4 ml inj s.c. puuttuu lääkelistalta, vaikka se on määrätty.", false);
         return false;
       }
 
@@ -1135,6 +1178,17 @@ Muu aiempi lääkitys jatkuu, ellei erikseen ole päätetty lopettaa.`
       return true;
     }
 
+    function checkNoKlexane(rows) {
+      const klex = rows.find(r =>
+        r.drugName === "klexane 40 mg/0,4 ml inj s.c."
+      );
+      if (klex) {
+        showFeedback("Klexane on määrätty lopetettavaksi – sen ei tule enää olla lääkelistalla.", false);
+        return false;
+      }
+      return true;
+    }
+
     function checkCefuroxim(rows) {
       const cef = rows.find(r =>
         r.drugName === targetCefuroxim.drugName &&
@@ -1146,7 +1200,7 @@ Muu aiempi lääkitys jatkuu, ellei erikseen ole päätetty lopettaa.`
         return false;
       }
       if (cef.type !== targetCefuroxim.type || cef.route !== targetCefuroxim.route) {
-        showFeedback("Cefuroxim tulee merkitä tyypiksi Määräaikainen ja antoreitiksi p.o.", false);
+        showFeedback("Cefuroxim tulee merkitä tyypiksi Määräaikainen ja antoreitiksi p.o. (ei i.v.).", false);
         return false;
       }
       const normPeriod = cef.period.replace(/\s/g, "").replace("–", "-");
@@ -1155,6 +1209,154 @@ Muu aiempi lääkitys jatkuu, ellei erikseen ole päätetty lopettaa.`
         return false;
       }
       return true;
+    }
+
+    // ---------- RIVIKOHTAINEN ARVIO (vihreä/punainen) ----------
+
+    function evaluateRow(row, taskIndex) {
+      // Lopetetut lääkkeet aina virhe:
+      if (row.drugName === "plavix 75 mg tabletti" || row.drugName === "burana 400 mg tabletti") {
+        return "error";
+      }
+
+      // Peruslääkitys (Met, Mare, Lantus)
+      if (row.drugName === targetMetforem.drugName) {
+        if (
+          row.strength === targetMetforem.strength.toLowerCase() &&
+          row.form === targetMetforem.form.toLowerCase() &&
+          row.dose === targetMetforem.dose &&
+          row.a === targetMetforem.a &&
+          row.i === targetMetforem.i &&
+          row.type === targetMetforem.type &&
+          row.route === targetMetforem.route
+        ) return "ok";
+        else return "error";
+      }
+      if (row.drugName === targetMarevan.drugName) {
+        if (
+          row.strength === targetMarevan.strength.toLowerCase() &&
+          row.form === targetMarevan.form.toLowerCase() &&
+          row.dose === targetMarevan.dose &&
+          row.i === targetMarevan.i &&
+          row.type === targetMarevan.type &&
+          row.route === targetMarevan.route
+        ) return "ok";
+        else return "error";
+      }
+      if (row.drugName === targetLantus.drugName) {
+        if (
+          row.strength === targetLantus.strength.toLowerCase() &&
+          row.form === targetLantus.form.toLowerCase() &&
+          row.type === targetLantus.type &&
+          row.route === targetLantus.route
+        ) return "ok";
+        else return "error";
+      }
+
+      // Simvastatiini – annosmuutos
+      if (row.drugName === "simvastatin orion 20 mg tabl." ||
+          row.drugName === "simvastatin orion 40 mg tabl.") {
+        const dose20up = (row.drugName === "simvastatin orion 20 mg tabl." &&
+                         (row.dose === normDoseString("2 x 1") || row.dose === normDoseString("1 x 2")) &&
+                         row.type === "Jatkuva" && row.route === "p.o.");
+        const dose40 = (row.drugName === "simvastatin orion 40 mg tabl." &&
+                        row.dose === normDoseString("1 x 1") &&
+                        row.type === "Jatkuva" && row.route === "p.o.");
+
+        const old20 = (row.drugName === "simvastatin orion 20 mg tabl." &&
+                       row.dose === normDoseString("1 x 1"));
+
+        if (old20) return "error";
+        if (dose20up || dose40) return "ok";
+        return "error";
+      }
+
+      // Panadol (päivä 2 →)
+      if (taskIndex >= 1 && row.drugName.startsWith("panadol") && row.form === "tabletti") {
+        const ok1g = (
+          row.drugName === targetPanadol1g.drugName &&
+          row.strength === targetPanadol1g.strength.toLowerCase() &&
+          row.dose === targetPanadol1g.dose &&
+          row.a === targetPanadol1g.a &&
+          row.type === targetPanadol1g.type &&
+          row.route === targetPanadol1g.route
+        );
+        const ok500 = (
+          row.drugName === targetPanadol500.drugName &&
+          row.strength === targetPanadol500.strength.toLowerCase() &&
+          row.dose === targetPanadol500.dose &&
+          row.a === targetPanadol500.a &&
+          row.type === targetPanadol500.type &&
+          row.route === targetPanadol500.route
+        );
+        return (ok1g || ok500) ? "ok" : "error";
+      }
+
+      // Primperan / Voltaren (päivä 2–)
+      if (taskIndex >= 2 && row.drugName === "primperan 10 mg/ml inj i.v.") {
+        if (
+          row.strength === "10 mg/ml" &&
+          row.form === "injektio" &&
+          row.dose === normDoseString("1 x 1-3") &&
+          row.type === "Tarvittava" &&
+          row.route === "i.v." &&
+          scheduleIsEmpty(row)
+        ) return "ok";
+        else return "error";
+      }
+
+      if (taskIndex >= 2 && row.drugName === "voltaren 75 mg inj i.m.") {
+        if (
+          row.strength === "75 mg" &&
+          row.form === "injektio" &&
+          row.dose === normDoseString("1 x 1-2") &&
+          row.type === "Tarvittava" &&
+          row.route === "i.m." &&
+          scheduleIsEmpty(row)
+        ) return "ok";
+        else return "error";
+      }
+
+      // Klexane – tulee olla päivinä 2–3, pois päivinä 4–5
+      if (row.drugName === "klexane 40 mg/0,4 ml inj s.c.") {
+        if (currentTaskIndex <= 2) {
+          const iVal = (row.i || "").trim().toLowerCase();
+          const okI = (iVal === "1" || /mg|g/.test(iVal));
+          if (row.type === "Jatkuva" && row.route === "s.c." && okI) return "ok";
+          return "error";
+        } else {
+          // Päivä 4–5: pitäisi olla lopetettu
+          return "error";
+        }
+      }
+
+      // Cefuroxim (päivä 5)
+      if (taskIndex >= 4 && row.drugName === targetCefuroxim.drugName) {
+        const normPeriod = row.period.replace(/\s/g, "").replace("–", "-");
+        if (
+          row.strength === targetCefuroxim.strength.toLowerCase() &&
+          row.form === targetCefuroxim.form.toLowerCase() &&
+          row.type === targetCefuroxim.type &&
+          row.route === targetCefuroxim.route &&
+          normPeriod === targetCefuroxim.periodNorm
+        ) return "ok";
+        else return "error";
+      }
+
+      // Muut rivit: oletuksena neutraaleja (ei korosteta)
+      return "neutral";
+    }
+
+    function colorRows(rows) {
+      Array.from(tbody.children).forEach(tr => {
+        tr.classList.remove("row-ok", "row-error");
+        const idx = parseInt(tr.dataset.index, 10);
+        const row = rows[idx];
+        if (!row) return;
+        const status = evaluateRow(row, currentTaskIndex);
+        if (status === "ok") tr.classList.add("row-ok");
+        if (status === "error") tr.classList.add("row-error");
+      });
     }
 
     // ---------- TEHTÄVÄKOHTAINEN TARKISTUS ----------
@@ -1167,55 +1369,67 @@ Muu aiempi lääkitys jatkuu, ellei erikseen ole päätetty lopettaa.`
 
       if (rows.length === 0) {
         showFeedback("Lääkelista on tyhjä. Lisää lääkkeet lääkärin tekstin mukaisesti.", false);
+        colorRows(rows);
         return false;
       }
 
+      let ok = false;
+
       switch (currentTaskIndex) {
         case 0: {
-          return checkTask1(rows);
+          ok = checkTask1(rows);
+          break;
         }
         case 1: {
-          if (!checkBaseMeds(rows)) return false;
-          if (!checkPanadol(rows)) return false;
-          showFeedback("Päivän 2 lääkitys on oikein: peruslääkitys jatkuu ja tarvittaessa parasetamoli on lisätty oikein.", true);
-          return true;
+          if (!checkBaseMeds(rows)) break;
+          if (!checkStatinUp(rows)) break;
+          if (!checkNoPlavixBurana(rows)) break;
+          if (!checkPanadol(rows)) break;
+          if (!checkKlexanePresent(rows)) break;
+          showFeedback("Päivän 2 lääkitys on oikein: peruslääkitys, simvastatiinin annosmuutos, Klexane ja tarvittaessa parasetamoli.", true);
+          ok = true;
+          break;
         }
         case 2: {
-          if (!checkBaseMeds(rows)) return false;
-          if (!checkPanadol(rows)) return false;
-          if (!checkIVandIM(rows)) return false;
-          showFeedback("Päivän 3 tilanne on oikein: Primperan i.v. ja Voltaren i.m. tarvittaessa ilman Y–IY-aikoja.", true);
-          return true;
+          if (!checkBaseMeds(rows)) break;
+          if (!checkStatinUp(rows)) break;
+          if (!checkNoPlavixBurana(rows)) break;
+          if (!checkPanadol(rows)) break;
+          if (!checkKlexanePresent(rows)) break;
+          if (!checkIVandIM(rows)) break;
+          showFeedback("Päivän 3 tilanne on oikein: Primperan i.v. ja Voltaren i.m. tarvittaessa, Klexane ja muu lääkitys.", true);
+          ok = true;
+          break;
         }
         case 3: {
-          if (!checkBaseMeds(rows)) return false;
-          if (!checkPanadol(rows)) return false;
-          if (!checkIVandIM(rows)) return false;
-          if (!checkKlexane(rows)) return false;
-          showFeedback("Päivän 4 lääkitys on oikein: Klexane lisätty oikealla tavalla.", true);
-          return true;
+          if (!checkBaseMeds(rows)) break;
+          if (!checkStatinUp(rows)) break;
+          if (!checkNoPlavixBurana(rows)) break;
+          if (!checkPanadol(rows)) break;
+          if (!checkIVandIM(rows)) break;
+          if (!checkNoKlexane(rows)) break;
+          showFeedback("Päivän 4 lääkitys on oikein: Klexane on lopetettu ja muu lääkitys jatkuu.", true);
+          ok = true;
+          break;
         }
         case 4: {
-          if (!checkBaseMeds(rows)) return false;
-          if (!checkPanadol(rows)) return false;
-          if (!checkIVandIM(rows)) return false;
-          if (!checkKlexane(rows)) return false;
-          if (!checkCefuroxim(rows)) return false;
-          showFeedback("Päivän 5 antibioottihoito ja koko harjoitusjakso on merkitty oikein. Hienoa työtä! ✅", true);
-          return true;
+          if (!checkBaseMeds(rows)) break;
+          if (!checkStatinUp(rows)) break;
+          if (!checkNoPlavixBurana(rows)) break;
+          if (!checkPanadol(rows)) break;
+          if (!checkIVandIM(rows)) break;
+          if (!checkNoKlexane(rows)) break;
+          if (!checkCefuroxim(rows)) break;
+          showFeedback("Koe valmis ✅ Kaikki viiden päivän lääkitykset on merkitty oikein lääkelistalle.", true);
+          ok = true;
+          break;
         }
         default:
-          return false;
+          ok = false;
       }
-    }
 
-    // ---------- RESET & NAVIGOINTI ----------
-
-    function resetList() {
-      meds = JSON.parse(JSON.stringify(INITIAL_LIST));
-      lastCheckOK = false;
-      feedbackEl.style.display = "none";
-      renderAll();
+      colorRows(rows);
+      return ok;
     }
 
     // ---------- TAPAHTUMAT ----------
@@ -1251,10 +1465,6 @@ Muu aiempi lääkitys jatkuu, ellei erikseen ole päätetty lopettaa.`
         updateNextButtonVisibility();
         window.scrollTo({ top: 0, behavior: "smooth" });
       }
-    });
-
-    resetBtn.addEventListener("click", () => {
-      resetList();
     });
 
     // ---------- INIT ----------
