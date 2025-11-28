@@ -262,6 +262,33 @@
       color: var(--text-muted);
     }
 
+    /* Historia-paneeli */
+
+    .history-list {
+      max-height: 200px;
+      overflow-y: auto;
+      font-size: 0.72rem;
+    }
+
+    .history-entry {
+      padding: 4px 6px;
+      border-bottom: 1px dashed rgba(148, 163, 184, 0.6);
+    }
+
+    .history-entry:last-child {
+      border-bottom: none;
+    }
+
+    .history-entry.history-ok {
+      background: #f0fdf4;
+      color: #166534;
+    }
+
+    .history-entry.history-error {
+      background: #fef2f2;
+      color: #b91c1c;
+    }
+
     @media (max-width: 900px) {
       table {
         font-size: 0.72rem;
@@ -373,6 +400,16 @@
 
       <div id="feedback" class="feedback"></div>
     </div>
+
+    <!-- HISTORIA / LOKI -->
+    <div class="card">
+      <div class="table-card-header">
+        <div class="table-card-title">Historia (tarkistukset)</div>
+      </div>
+      <div id="history-list" class="history-list">
+        Ei vielä tarkistuksia.
+      </div>
+    </div>
   </div>
 
   <!-- LÄÄKELUETTELO (HAKU) -->
@@ -391,12 +428,12 @@
     const MEDICATIONS = [
       { code: "PANADOL_1G_TAB",   name: "Panadol 1 g tabletti",               strength: "1 g",             form: "tabletti" },
       { code: "PANADOL_500_TAB",  name: "Panadol 500 mg tabletti",            strength: "500 mg",          form: "tabletti" },
-      { code: "PARATABS_500_TAB", name: "Paratabs 500 mg tabletti",           strength: "500 mg",          form: "tabletti" },
+
       { code: "PANACOD_TAB",      name: "Panacod 500 mg/30 mg tabletti",      strength: "500 mg/30 mg",    form: "tabletti" },
 
       { code: "BURANA_400_TAB",   name: "Burana 400 mg tabletti",             strength: "400 mg",          form: "tabletti" },
 
-      { code: "MAREVAN_3_TAB",    name: "Marevan 3 mg tabletti",              strength: "3 mg",            form: "tabletti" },
+      { code: "XARELTO_20_TAB",   name: "Xarelto 20 mg tabletti",             strength: "20 mg",           form: "tabletti" },
       { code: "METFOREM_500",     name: "Metforem 500 mg tabletti",           strength: "500 mg",          form: "tabletti" },
 
       { code: "LANTUS_SOLO",      name: "Lantus SoloStar 100 IU/ml inj s.c.", strength: "100 IU/ml",       form: "injektio" },
@@ -406,7 +443,11 @@
 
       { code: "SIMVA_20",         name: "Simvastatin Orion 20 mg tabl.",      strength: "20 mg",           form: "tabletti" },
       { code: "SIMVA_40",         name: "Simvastatin Orion 40 mg tabl.",      strength: "40 mg",           form: "tabletti" },
+
       { code: "ATORVA_40",        name: "Atorvastatin Krka 40 mg tabl.",      strength: "40 mg",           form: "tabletti" },
+
+      { code: "PRIMASPAN_100",    name: "Primaspan 100 mg tabletti",          strength: "100 mg",          form: "tabletti" },
+      { code: "ASPIRIN_100",      name: "Aspirin Cardio 100 mg tabletti",     strength: "100 mg",          form: "tabletti" },
 
       { code: "PRIMPERAN_IV",     name: "Primperan 10 mg/ml inj i.v.",        strength: "10 mg/ml",        form: "injektio" },
       { code: "VOLTAREN_IM",      name: "Voltaren 75 mg inj i.m.",            strength: "75 mg",           form: "injektio" },
@@ -419,6 +460,11 @@
       { code: "PLAVIX_75_TAB",    name: "Plavix 75 mg tabletti",              strength: "75 mg",           form: "tabletti" }
     ];
 
+    const ASA_NAMES = [
+      "primaspan 100 mg tabletti",
+      "aspirin cardio 100 mg tabletti"
+    ];
+
     // ---------- PÄIVÄKOHTAISET TILANTEET ----------
 
     const TASKS = [
@@ -428,8 +474,9 @@
 
 Siirtyy nyt vuodeosastolle. Osastolääkityksenä jatketaan:
 – Metforem 500 mg tabletti 1 x 2 p.o. (aamu ja ilta)
-– Marevan 3 mg tabletti 1 x 1 p.o. (ilta)
+– Xarelto 20 mg tabletti 1 x 1 p.o. (ilta)
 – Lantus SoloStar 100 IU/ml inj s.c. 20 IU iltaisin
+– Primaspan 100 mg tabletti 1 x 1 p.o. (aamu)
 – Simvastatin Orion 20 mg tabl. nostetaan annokseen 40 mg iltaisin (joko 20 mg 2 x 1 tai Simvastatin Orion 40 mg 1 x 1)
 
 Lopetetaan Plavix 75 mg tabletti ja Burana 400 mg tabletti.`
@@ -447,7 +494,7 @@ Osastolla käytössä:
 – Panadol 1 g tabletti
 – Panadol 500 mg tabletti
 
-Muu säännöllinen lääkitys jatkuu ennallaan (mukaan lukien suurennettu simvastannos).`
+Muu säännöllinen lääkitys jatkuu ennallaan (mukaan lukien suurennettu simvastannos ja ASA-profylaksia).`
       },
       {
         title: "Päivä 3 – Pahoinvointi ja lisäkipu (i.v. + i.m.)",
@@ -470,7 +517,7 @@ Peruslääkitys, Klexane ja tarvittaessa parasetamoli jatkuvat ennallaan.`
 
 Klexane 40 mg s.c. 1 x 1 iltaisin lopetetaan.
 
-Muu lääkitys (Metforem, Marevan, Lantus, suurennettu simvastatiiniannos sekä tarvittaessa parasetamoli, Primperan ja Voltaren) jatkuu ennallaan.`
+Muu lääkitys (Metforem, Xarelto, Lantus, ASA, suurennettu simvastatiiniannos sekä tarvittaessa parasetamoli, Primperan ja Voltaren) jatkuu ennallaan.`
       },
       {
         title: "Päivä 5 – Antibioottihoito (cefuroxim-kuuri, 12.12.2025–18.12.2025)",
@@ -488,7 +535,7 @@ Muu aiempi lääkitys jatkuu, ellei erikseen ole päätetty lopettaa.`
       }
     ];
 
-    // ---------- ALKUTILA – 6 LÄÄKETTÄ VALMIINA ----------
+    // ---------- ALKUTILA – LÄÄKELISTA ----------
 
     const INITIAL_LIST = [
       {
@@ -503,12 +550,12 @@ Muu aiempi lääkitys jatkuu, ellei erikseen ole päätetty lopettaa.`
         y: "", ay: "", a: "1", ap: "", p: "", ip: "", i: "1", iy: ""
       },
       {
-        medCode: "MAREVAN_3_TAB",
+        medCode: "XARELTO_20_TAB",
         type: "Jatkuva",
         period: "",
         route: "p.o.",
-        drugName: "Marevan 3 mg tabletti",
-        strength: "3 mg",
+        drugName: "Xarelto 20 mg tabletti",
+        strength: "20 mg",
         form: "tabletti",
         dose: "1 x 1",
         y: "", ay: "", a: "", ap: "", p: "", ip: "", i: "1", iy: ""
@@ -523,6 +570,17 @@ Muu aiempi lääkitys jatkuu, ellei erikseen ole päätetty lopettaa.`
         form: "injektio",
         dose: "20 IU 1 x 1",
         y: "", ay: "", a: "", ap: "", p: "", ip: "", i: "1", iy: ""
+      },
+      {
+        medCode: "PRIMASPAN_100",
+        type: "Jatkuva",
+        period: "",
+        route: "p.o.",
+        drugName: "Primaspan 100 mg tabletti",
+        strength: "100 mg",
+        form: "tabletti",
+        dose: "1 x 1",
+        y: "", ay: "", a: "1", ap: "", p: "", ip: "", i: "", iy: ""
       },
       {
         medCode: "SIMVA_20",
@@ -572,9 +630,9 @@ Muu aiempi lääkitys jatkuu, ellei erikseen ole päätetty lopettaa.`
       route: "p.o."
     };
 
-    const targetMarevan = {
-      drugName: "marevan 3 mg tabletti",
-      strength: "3 mg",
+    const targetXarelto = {
+      drugName: "xarelto 20 mg tabletti",
+      strength: "20 mg",
       form: "tabletti",
       dose: normDoseString("1 x 1"),
       i: "1",
@@ -624,6 +682,7 @@ Muu aiempi lääkitys jatkuu, ellei erikseen ole päätetty lopettaa.`
     let meds = JSON.parse(JSON.stringify(INITIAL_LIST));
     let currentTaskIndex = 0;
     let lastCheckOK = false;
+    let feedbackHistory = [];
 
     const taskTitleEl = document.getElementById("task-title");
     const taskBadgeEl = document.getElementById("task-badge");
@@ -635,6 +694,7 @@ Muu aiempi lääkitys jatkuu, ellei erikseen ole päätetty lopettaa.`
     const nextBtn = document.getElementById("next-btn");
     const feedbackEl = document.getElementById("feedback");
     const datalistEl = document.getElementById("medications-list");
+    const historyListEl = document.getElementById("history-list");
 
     // Täytä datalist
     MEDICATIONS.forEach(med => {
@@ -938,11 +998,41 @@ Muu aiempi lääkitys jatkuu, ellei erikseen ole päätetty lopettaa.`
       };
     }
 
+    function renderHistory() {
+      if (feedbackHistory.length === 0) {
+        historyListEl.textContent = "Ei vielä tarkistuksia.";
+        return;
+      }
+      historyListEl.innerHTML = "";
+      feedbackHistory.forEach(entry => {
+        const div = document.createElement("div");
+        div.className = "history-entry " + (entry.ok ? "history-ok" : "history-error");
+        div.textContent = `${entry.time} – Päivä ${entry.day}: ${entry.message}`;
+        historyListEl.appendChild(div);
+      });
+    }
+
+    function addToHistory(message, ok) {
+      const now = new Date();
+      const timeStr = now.toLocaleTimeString("fi-FI", { hour: "2-digit", minute: "2-digit" });
+      feedbackHistory.unshift({
+        day: currentTaskIndex + 1,
+        ok,
+        message,
+        time: timeStr
+      });
+      if (feedbackHistory.length > 30) {
+        feedbackHistory.pop();
+      }
+      renderHistory();
+    }
+
     function showFeedback(message, ok) {
       feedbackEl.textContent = message;
       feedbackEl.classList.remove("ok", "warn");
       feedbackEl.classList.add(ok ? "ok" : "warn");
       feedbackEl.style.display = "block";
+      addToHistory(message, ok);
     }
 
     function updateNextButtonVisibility() {
@@ -979,21 +1069,21 @@ Muu aiempi lääkitys jatkuu, ellei erikseen ole päätetty lopettaa.`
         return false;
       }
 
-      // Marevan
-      const mare = rows.find(r => r.drugName === targetMarevan.drugName);
-      if (!mare) {
-        showFeedback("Marevan 3 mg tabletti puuttuu lääkelistalta.", false);
+      // Xarelto
+      const xar = rows.find(r => r.drugName === targetXarelto.drugName);
+      if (!xar) {
+        showFeedback("Xarelto 20 mg tabletti puuttuu lääkelistalta.", false);
         return false;
       }
       if (
-        mare.strength !== targetMarevan.strength.toLowerCase() ||
-        mare.form !== targetMarevan.form.toLowerCase() ||
-        mare.dose !== targetMarevan.dose ||
-        mare.i !== targetMarevan.i ||
-        mare.type !== targetMarevan.type ||
-        mare.route !== targetMarevan.route
+        xar.strength !== targetXarelto.strength.toLowerCase() ||
+        xar.form !== targetXarelto.form.toLowerCase() ||
+        xar.dose !== targetXarelto.dose ||
+        xar.i !== targetXarelto.i ||
+        xar.type !== targetXarelto.type ||
+        xar.route !== targetXarelto.route
       ) {
-        showFeedback("Marevan ei ole oikein. Tyyppi: Jatkuva, antoreitti: p.o., annos 1 x 1 (1x1) ja AY–Y-jaossa 1 I.", false);
+        showFeedback("Xarelto ei ole oikein. Tyyppi: Jatkuva, antoreitti: p.o., annos 1 x 1 (1x1) ja AY–Y-jaossa 1 I.", false);
         return false;
       }
 
@@ -1010,6 +1100,20 @@ Muu aiempi lääkitys jatkuu, ellei erikseen ole päätetty lopettaa.`
         lantus.route !== targetLantus.route
       ) {
         showFeedback("Lantus ei ole oikein (vahvuus, muoto, tyyppi tai antoreitti ei täsmää). Tyyppi Jatkuva, antoreitti s.c.", false);
+        return false;
+      }
+
+      // ASA (Primaspan / Aspirin Cardio)
+      const asa = rows.find(r =>
+        ASA_NAMES.includes(r.drugName) &&
+        r.strength === "100 mg" &&
+        r.form === "tabletti" &&
+        r.dose === normDoseString("1 x 1") &&
+        r.type === "Jatkuva" &&
+        r.route === "p.o."
+      );
+      if (!asa) {
+        showFeedback("ASA-profylaksia (Primaspan 100 mg tai Aspirin Cardio 100 mg, 1 x 1 p.o., Jatkuva) puuttuu tai on väärin.", false);
         return false;
       }
 
@@ -1170,7 +1274,8 @@ Muu aiempi lääkitys jatkuu, ellei erikseen ole päätetty lopettaa.`
       }
 
       const iVal = (klex.i || "").trim().toLowerCase();
-      if (!(iVal === "1" || /mg|g/.test(iVal))) {
+      const okI = (iVal === "1" || /mg|g/.test(iVal));
+      if (!okI) {
         showFeedback("Klexanen I-sarakkeessa tulee olla joko \"1\" TAI vahvuus, jossa on mg- tai g-yksikkö (esim. \"40 mg\").", false);
         return false;
       }
@@ -1211,15 +1316,15 @@ Muu aiempi lääkitys jatkuu, ellei erikseen ole päätetty lopettaa.`
       return true;
     }
 
-    // ---------- RIVIKOHTAINEN ARVIO (vihreä/punainen) ----------
+    // ---------- RIVIKOHTAINEN ARVIO ----------
 
-    function evaluateRow(row, taskIndex) {
-      // Lopetetut lääkkeet aina virhe:
+    function evaluateRow(row) {
+      // Aina väärä: lopetetut lääkkeet
       if (row.drugName === "plavix 75 mg tabletti" || row.drugName === "burana 400 mg tabletti") {
         return "error";
       }
 
-      // Peruslääkitys (Met, Mare, Lantus)
+      // Metforem
       if (row.drugName === targetMetforem.drugName) {
         if (
           row.strength === targetMetforem.strength.toLowerCase() &&
@@ -1230,19 +1335,23 @@ Muu aiempi lääkitys jatkuu, ellei erikseen ole päätetty lopettaa.`
           row.type === targetMetforem.type &&
           row.route === targetMetforem.route
         ) return "ok";
-        else return "error";
+        return "error";
       }
-      if (row.drugName === targetMarevan.drugName) {
+
+      // Xarelto
+      if (row.drugName === targetXarelto.drugName) {
         if (
-          row.strength === targetMarevan.strength.toLowerCase() &&
-          row.form === targetMarevan.form.toLowerCase() &&
-          row.dose === targetMarevan.dose &&
-          row.i === targetMarevan.i &&
-          row.type === targetMarevan.type &&
-          row.route === targetMarevan.route
+          row.strength === targetXarelto.strength.toLowerCase() &&
+          row.form === targetXarelto.form.toLowerCase() &&
+          row.dose === targetXarelto.dose &&
+          row.i === targetXarelto.i &&
+          row.type === targetXarelto.type &&
+          row.route === targetXarelto.route
         ) return "ok";
-        else return "error";
+        return "error";
       }
+
+      // Lantus
       if (row.drugName === targetLantus.drugName) {
         if (
           row.strength === targetLantus.strength.toLowerCase() &&
@@ -1250,10 +1359,22 @@ Muu aiempi lääkitys jatkuu, ellei erikseen ole päätetty lopettaa.`
           row.type === targetLantus.type &&
           row.route === targetLantus.route
         ) return "ok";
-        else return "error";
+        return "error";
       }
 
-      // Simvastatiini – annosmuutos
+      // ASA (Primaspan / Aspirin)
+      if (ASA_NAMES.includes(row.drugName)) {
+        if (
+          row.strength === "100 mg" &&
+          row.form === "tabletti" &&
+          row.dose === normDoseString("1 x 1") &&
+          row.type === "Jatkuva" &&
+          row.route === "p.o."
+        ) return "ok";
+        return "error";
+      }
+
+      // Simvastatiini
       if (row.drugName === "simvastatin orion 20 mg tabl." ||
           row.drugName === "simvastatin orion 40 mg tabl.") {
         const dose20up = (row.drugName === "simvastatin orion 20 mg tabl." &&
@@ -1271,8 +1392,8 @@ Muu aiempi lääkitys jatkuu, ellei erikseen ole päätetty lopettaa.`
         return "error";
       }
 
-      // Panadol (päivä 2 →)
-      if (taskIndex >= 1 && row.drugName.startsWith("panadol") && row.form === "tabletti") {
+      // Panadol
+      if (row.drugName.startsWith("panadol") && row.form === "tabletti") {
         const ok1g = (
           row.drugName === targetPanadol1g.drugName &&
           row.strength === targetPanadol1g.strength.toLowerCase() &&
@@ -1292,8 +1413,8 @@ Muu aiempi lääkitys jatkuu, ellei erikseen ole päätetty lopettaa.`
         return (ok1g || ok500) ? "ok" : "error";
       }
 
-      // Primperan / Voltaren (päivä 2–)
-      if (taskIndex >= 2 && row.drugName === "primperan 10 mg/ml inj i.v.") {
+      // Primperan / Voltaren
+      if (row.drugName === "primperan 10 mg/ml inj i.v.") {
         if (
           row.strength === "10 mg/ml" &&
           row.form === "injektio" &&
@@ -1302,10 +1423,10 @@ Muu aiempi lääkitys jatkuu, ellei erikseen ole päätetty lopettaa.`
           row.route === "i.v." &&
           scheduleIsEmpty(row)
         ) return "ok";
-        else return "error";
+        return "error";
       }
 
-      if (taskIndex >= 2 && row.drugName === "voltaren 75 mg inj i.m.") {
+      if (row.drugName === "voltaren 75 mg inj i.m.") {
         if (
           row.strength === "75 mg" &&
           row.form === "injektio" &&
@@ -1314,24 +1435,23 @@ Muu aiempi lääkitys jatkuu, ellei erikseen ole päätetty lopettaa.`
           row.route === "i.m." &&
           scheduleIsEmpty(row)
         ) return "ok";
-        else return "error";
+        return "error";
       }
 
-      // Klexane – tulee olla päivinä 2–3, pois päivinä 4–5
+      // Klexane
       if (row.drugName === "klexane 40 mg/0,4 ml inj s.c.") {
+        const iVal = (row.i || "").trim().toLowerCase();
+        const okI = (iVal === "1" || /mg|g/.test(iVal));
         if (currentTaskIndex <= 2) {
-          const iVal = (row.i || "").trim().toLowerCase();
-          const okI = (iVal === "1" || /mg|g/.test(iVal));
           if (row.type === "Jatkuva" && row.route === "s.c." && okI) return "ok";
           return "error";
         } else {
-          // Päivä 4–5: pitäisi olla lopetettu
           return "error";
         }
       }
 
-      // Cefuroxim (päivä 5)
-      if (taskIndex >= 4 && row.drugName === targetCefuroxim.drugName) {
+      // Cefuroxim
+      if (row.drugName === targetCefuroxim.drugName) {
         const normPeriod = row.period.replace(/\s/g, "").replace("–", "-");
         if (
           row.strength === targetCefuroxim.strength.toLowerCase() &&
@@ -1340,10 +1460,10 @@ Muu aiempi lääkitys jatkuu, ellei erikseen ole päätetty lopettaa.`
           row.route === targetCefuroxim.route &&
           normPeriod === targetCefuroxim.periodNorm
         ) return "ok";
-        else return "error";
+        return "error";
       }
 
-      // Muut rivit: oletuksena neutraaleja (ei korosteta)
+      // Muut rivit: neutraali
       return "neutral";
     }
 
@@ -1353,7 +1473,7 @@ Muu aiempi lääkitys jatkuu, ellei erikseen ole päätetty lopettaa.`
         const idx = parseInt(tr.dataset.index, 10);
         const row = rows[idx];
         if (!row) return;
-        const status = evaluateRow(row, currentTaskIndex);
+        const status = evaluateRow(row);
         if (status === "ok") tr.classList.add("row-ok");
         if (status === "error") tr.classList.add("row-error");
       });
@@ -1472,9 +1592,9 @@ Muu aiempi lääkitys jatkuu, ellei erikseen ole päätetty lopettaa.`
     (function init() {
       renderTask();
       renderAll();
+      renderHistory();
     })();
   </script>
 </body>
 </html>
-
 
