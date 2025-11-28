@@ -1318,27 +1318,60 @@ Klexane on lopetettu, Primaspan on jälleen käytössä, ja muu aiempi lääkity
       return true;
     }
 
-    function checkCefuroxim(rows) {
-      const cef = rows.find(r =>
+      function checkCefuroxim(rows) {
+      // Etsi normalized-rivistä cefuroxim- tablettilääke
+      const cefRow = rows.find(r =>
         r.drugName === targetCefuroxim.drugName &&
         r.strength === targetCefuroxim.strength.toLowerCase() &&
         r.form === targetCefuroxim.form.toLowerCase()
       );
-      if (!cef) {
+
+      if (!cefRow) {
         showFeedback("Cefuroxim 500 mg tabletti puuttuu lääkelistalta.", false);
         return false;
       }
-      if (cef.type !== targetCefuroxim.type || cef.route !== targetCefuroxim.route) {
+
+      if (cefRow.type !== targetCefuroxim.type || cefRow.route !== targetCefuroxim.route) {
         showFeedback("Cefuroxim tulee merkitä tyypiksi Määräaikainen ja antoreitiksi p.o. (ei i.v.).", false);
         return false;
       }
-      const normPeriod = cef.period.replace(/\s/g, "").replace("–", "-");
-      if (normPeriod !== targetCefuroxim.periodNorm) {
-        showFeedback("Cefuroxim-kuurin aikavälin tulee olla 12.12.2025–18.12.2025 (valitse Joulukuu 2025 -valikosta 12 → 18).", false);
+
+      // Haetaan vastaava 'med'-olio, josta löytyy startDay / endDay
+      const cefMed = meds.find(m =>
+        (m.drugName || "").trim().toLowerCase() === targetCefuroxim.drugName
+      );
+
+      if (!cefMed) {
+        showFeedback("Cefuroxim-riviä ei löytynyt sisäisestä listasta (tekninen virhe).", false);
         return false;
       }
+
+      let startDay = typeof cefMed.startDay === "number" ? cefMed.startDay : null;
+      let endDay   = typeof cefMed.endDay   === "number" ? cefMed.endDay   : null;
+
+      // Varmuuden vuoksi yritetään vielä parsia periodista, jos start/end puuttuvat
+      if ((startDay === null || endDay === null) && cefMed.period) {
+        const norm = cefMed.period.replace(/\s/g, "").replace("–", "-");
+        const m = norm.match(/(\d{1,2})\.12\.2025-(\d{1,2})\.12\.2025/);
+        if (m) {
+          startDay = parseInt(m[1], 10);
+          endDay   = parseInt(m[2], 10);
+        }
+      }
+
+      if (startDay === null || endDay === null) {
+        showFeedback("Valitse Cefuroxim-kuurille sekä alkupäivä että loppupäivä Joulukuu 2025 -valikosta.", false);
+        return false;
+      }
+
+      if (startDay !== 12 || endDay !== 18) {
+        showFeedback("Cefuroxim-kuurin aikavälin tulee olla 12.12.2025–18.12.2025 (12 → 18).", false);
+        return false;
+      }
+
       return true;
     }
+
 
     function evaluateRow(row) {
       if (row.drugName === "plavix 75 mg tabletti" || row.drugName === "burana 400 mg tabletti") {
