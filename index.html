@@ -325,19 +325,21 @@
         <table id="med-table">
           <thead>
             <tr>
-              <th style="width: 9%;">Tyyppi</th>
-              <th style="width: 10%;">Aikaväli</th>
-              <th style="width: 18%;">Lääke</th>
-              <th style="width: 9%;">Vahvuus</th>
-              <th style="width: 9%;">Muoto</th>
-              <th style="width: 11%;">Annostus</th>
-              <th>AY</th>
-              <th>A</th>
-              <th>AP</th>
-              <th>P</th>
-              <th>IP</th>
-              <th>I</th>
-              <th>Y</th>
+              <th style="width: 8%;">Tyyppi</th>
+              <th style="width: 9%;">Aikaväli</th>
+              <th style="width: 16%;">Lääke</th>
+              <th style="width: 8%;">Vahvuus</th>
+              <th style="width: 8%;">Muoto</th>
+              <th style="width: 7%;">Antoreitti</th>
+              <th style="width: 8%;">Annostus</th>
+              <th title="Y: 00.00–02.59">Y</th>
+              <th title="AY: 03.00–05.59">AY</th>
+              <th title="A: 06.00–08.59">A</th>
+              <th title="AP: 09.00–11.59">AP</th>
+              <th title="P: 12.00–14.59">P</th>
+              <th title="IP: 15.00–17.59">IP</th>
+              <th title="I: 18.00–20.59">I</th>
+              <th title="IY: 21.00–23.59">IY</th>
               <th style="width: 5%;">&nbsp;</th>
             </tr>
           </thead>
@@ -347,8 +349,9 @@
 
       <div class="footer">
         Lääkkeen nimen valinta täyttää vahvuuden ja muodon automaattisesti, jos valmiste löytyy luettelosta.  
-        AY, A, AP, P, IP, I, Y: merkitse tablettimäärä (esim. 1, 0,5) tai <strong>injektioilla myös vahvuus, esim. "40 mg"</strong>.  
-        Huom: jos syötät pelkän luvun (esim. 40) vahvuutena, täytyy mukana olla myös yksikkö (mg tai g).
+        Antoreitti (p.o., s.c., i.m., i.v.) valitaan käsin.  
+        Y, AY, A, AP, P, IP, I, IY: merkitse tablettimäärä (esim. 1, 0,5) tai <strong>injektioilla myös vahvuus, esim. "40 mg"</strong>.  
+        Huom: jos syötät pelkän luvun (esim. 40) vahvuutena aikataulukenttään, tulee mukana olla myös yksikkö (mg tai g) niissä tapauksissa, joissa tehtävä sitä vaatii.
       </div>
 
       <div style="margin-top: 10px; display: flex; gap: 8px; flex-wrap: wrap; align-items: center;">
@@ -377,7 +380,7 @@
       return (s || "")
         .toLowerCase()
         .replace(",", ".")
-        .replace(/\s*/g, ""); // poistaa kaikki välilyönnit → "1x1", "0.5x1-3vrk"
+        .replace(/\s*/g, ""); // poistaa välilyönnit → "1x1", "0.5x1-3vrk"
     }
 
     // ---------- LÄÄKEKATALOGI ----------
@@ -388,14 +391,14 @@
       { code: "BURANA_400_TAB",   name: "Burana 400 mg tabletti",             strength: "400 mg",      form: "tabletti" },
       { code: "MAREVAN_3_TAB",    name: "Marevan 3 mg tabletti",              strength: "3 mg",        form: "tabletti" },
       { code: "METFOREM_500",     name: "Metforem 500 mg tabletti",           strength: "500 mg",      form: "tabletti" },
-      { code: "LANTUS_SOLO",      name: "Lantus SoloStar 100 IU/ml inj s.c.", strength: "100 IU/ml",   form: "injektio s.c." },
+      { code: "LANTUS_SOLO",      name: "Lantus SoloStar 100 IU/ml inj s.c.", strength: "100 IU/ml",   form: "injektio" },
       { code: "SERTRALIN_50",     name: "Sertralin Orion 50 mg tabletti",     strength: "50 mg",       form: "tabletti" },
       { code: "CIPRALEX_10",      name: "Cipralex 10 mg tabletti",            strength: "10 mg",       form: "tabletti" },
       { code: "SIMVA_20",         name: "Simvastatin Orion 20 mg tabl.",      strength: "20 mg",       form: "tabletti" },
       { code: "ATORVA_40",        name: "Atorvastatin Krka 40 mg tabl.",      strength: "40 mg",       form: "tabletti" },
-      { code: "PRIMPERAN_IV",     name: "Primperan 10 mg/ml inj i.v.",        strength: "10 mg/ml",    form: "injektio i.v." },
-      { code: "VOLTAREN_IM",      name: "Voltaren 75 mg inj i.m.",            strength: "75 mg",       form: "injektio i.m." },
-      { code: "KLEXANE_40_SC",    name: "Klexane 40 mg/0,4 ml inj s.c.",      strength: "40 mg/0,4 ml",form: "injektio s.c." }
+      { code: "PRIMPERAN_IV",     name: "Primperan 10 mg/ml inj i.v.",        strength: "10 mg/ml",    form: "injektio" },
+      { code: "VOLTAREN_IM",      name: "Voltaren 75 mg inj i.m.",            strength: "75 mg",       form: "injektio" },
+      { code: "KLEXANE_40_SC",    name: "Klexane 40 mg/0,4 ml inj s.c.",      strength: "40 mg/0,4 ml",form: "injektio" }
     ];
 
     // ---------- TEHTÄVÄT ----------
@@ -420,7 +423,10 @@ Tehtävä:
    – Metforem: annostus 1 x 2 (myös "1x2" hyväksytään), AY–Y-jaossa 1 A ja 1 I
    – Marevan: annostus 1 x 1 ("1x1") iltaisin, AY–Y-jaossa 1 I
    – Lantus: annostus esim. "20 IU s.c. 1 x 1"; AY–Y-jakoa ei tarkisteta Lantuksen osalta.
-4. Tarkista tehtävä. Onnistuneen tarkistuksen jälkeen voit siirtyä seuraavaan määräykseen.`
+4. Antoreitti:
+   – Metforem ja Marevan: p.o.
+   – Lantus: s.c.
+5. Tarkista tehtävä. Onnistuneen tarkistuksen jälkeen voit siirtyä seuraavaan määräykseen.`
       },
       {
         title: "Tehtävä 2 – Uusi määräys: parasetamoli (päivä 2)",
@@ -445,7 +451,8 @@ Tehtävä:
    – Panadol 500 mg tabletti
      • annostus: 1 x 1 ("1x1")
      • AY–Y-jako: 1 A
-3. Tarkista tehtävä. Kun se on oikein, siirry seuraavaan määräykseen.`
+3. Antoreitti: p.o.
+4. Tarkista tehtävä. Kun se on oikein, siirry seuraavaan määräykseen.`
       },
       {
         title: "Tehtävä 3 – Uusi määräys: pahoinvointi ja lisäkipu (i.v. + i.m.) (päivä 3)",
@@ -466,10 +473,12 @@ Tehtävä:
 2. Lisää lääkelistalle:
    – Primperan 10 mg/ml inj i.v., tyyppi "Tarvittava"
      • annostus: 1 x 1–3 vrk (myös "1x1-3vrk" hyväksytään)
+     • antoreitti: i.v.
    – Voltaren 75 mg inj i.m., tyyppi "Tarvittava"
      • annostus: 1 x 1–2 vrk (myös "1x1-2vrk" hyväksytään)
+     • antoreitti: i.m.
 3. AY–Y-jakoa ei vaadita tarkasti näille tarvittaessa injektioille tässä tehtävässä,
-   mutta niiden tulee löytyä listalta oikealla nimellä, vahvuudella ja muodolla.`
+   mutta niiden tulee löytyä listalta oikealla nimellä, vahvuudella, muodolla ja antoreitillä.`
       },
       {
         title: "Tehtävä 4 – Uusi määräys: tromboosiprofylaksia s.c. (päivä 4)",
@@ -490,11 +499,12 @@ Tehtävä:
    – AY–Y-jako: iltaan (I), voit merkitä joko:
      • "1" tai
      • "40 mg" (tai vastaava, jossa on aina mg- tai g-yksikkö mukana, ei pelkkä numero).
+   – antoreitti: s.c.
 3. Tarkista tehtävä. Kun kaikki on oikein, koko harjoitussarja on suoritettu.`
       }
     ];
 
-    const INITIAL_LIST = []; // aloitetaan tyhjällä lääkelistalla
+    const INITIAL_LIST = [];
 
     // ---------- TAVOITE-ARVOT ----------
 
@@ -518,7 +528,7 @@ Tehtävä:
     const targetLantus = {
       drugName: "lantus solostar 100 iu/ml inj s.c.",
       strength: "100 iu/ml",
-      form: "injektio s.c."
+      form: "injektio"
     };
 
     const targetPanadol1g = {
@@ -575,12 +585,13 @@ Tehtävä:
     }
 
     function ensureScheduleFields(med) {
-      const keys = ["ay", "a", "ap", "p", "ip", "i", "y"];
+      const keys = ["y", "ay", "a", "ap", "p", "ip", "i", "iy"];
       keys.forEach(k => {
         if (typeof med[k] === "undefined") med[k] = "";
       });
       if (typeof med.type === "undefined") med.type = "Jatkuva";
       if (typeof med.period === "undefined") med.period = "";
+      if (typeof med.route === "undefined") med.route = "";
       return med;
     }
 
@@ -598,8 +609,11 @@ Tehtävä:
           input.value = value || "";
           if (options.readonly) input.readOnly = true;
           if (options.datalist) input.setAttribute("list", options.datalist);
+          if (options.disabled) input.disabled = true;
           input.addEventListener("input", (e) => {
-            onInput(e.target.value);
+            if (!input.readOnly && !input.disabled) {
+              onInput(e.target.value);
+            }
           });
           if (options.onBlur) {
             input.addEventListener("blur", (e) => options.onBlur(e.target.value));
@@ -624,27 +638,30 @@ Tehtävä:
         // Tyyppi (Jatkuva / Tarvittava / Määräaikainen)
         const tdType = document.createElement("td");
         tdType.setAttribute("data-label", "Tyyppi");
-        const sel = document.createElement("select");
-        sel.className = "med-input";
+        const selType = document.createElement("select");
+        selType.className = "med-input";
         ["Jatkuva", "Tarvittava", "Määräaikainen"].forEach(optVal => {
           const o = document.createElement("option");
           o.value = optVal;
           o.textContent = optVal;
           if (med.type === optVal) o.selected = true;
-          sel.appendChild(o);
+          selType.appendChild(o);
         });
-        sel.addEventListener("change", e => {
+        selType.addEventListener("change", e => {
           meds[index].type = e.target.value;
+          renderMedTable(); // päivittää aikaväli-kentän readOnly-tilan
         });
-        tdType.appendChild(sel);
+        tdType.appendChild(selType);
         tr.appendChild(tdType);
 
-        // Aikaväli (tekstikenttä, esim. "1–3 vrk")
+        // Aikaväli – muokattavissa vain Määräaikainen
+        const isPeriodEditable = med.type === "Määräaikainen";
         tr.appendChild(
           createInputCell(
             "Aikaväli",
             med.period || "",
-            (val) => { meds[index].period = val; }
+            (val) => { meds[index].period = val; },
+            { readonly: !isPeriodEditable, disabled: !isPeriodEditable }
           )
         );
 
@@ -693,6 +710,24 @@ Tehtävä:
           )
         );
 
+        // Antoreitti (p.o., s.c., i.m., i.v., muu)
+        const tdRoute = document.createElement("td");
+        tdRoute.setAttribute("data-label", "Antoreitti");
+        const selRoute = document.createElement("select");
+        selRoute.className = "med-input";
+        ["", "p.o.", "s.c.", "i.m.", "i.v.", "muu"].forEach(optVal => {
+          const o = document.createElement("option");
+          o.value = optVal;
+          o.textContent = optVal || "-";
+          if (med.route === optVal) o.selected = true;
+          selRoute.appendChild(o);
+        });
+        selRoute.addEventListener("change", e => {
+          meds[index].route = e.target.value;
+        });
+        tdRoute.appendChild(selRoute);
+        tr.appendChild(tdRoute);
+
         // Annostus
         tr.appendChild(
           createInputCell(
@@ -702,14 +737,15 @@ Tehtävä:
           )
         );
 
-        // AY–Y
+        // Y–IY
+        tr.appendChild(createDoseCell("Y", "y"));
         tr.appendChild(createDoseCell("AY", "ay"));
         tr.appendChild(createDoseCell("A", "a"));
         tr.appendChild(createDoseCell("AP", "ap"));
         tr.appendChild(createDoseCell("P", "p"));
         tr.appendChild(createDoseCell("IP", "ip"));
         tr.appendChild(createDoseCell("I", "i"));
-        tr.appendChild(createDoseCell("Y", "y"));
+        tr.appendChild(createDoseCell("IY", "iy"));
 
         // Poisto
         const tdDelete = document.createElement("td");
@@ -741,14 +777,16 @@ Tehtävä:
         drugName: (m.drugName || "").trim().toLowerCase(),
         strength: (m.strength || "").trim().toLowerCase(),
         form: (m.form || "").trim().toLowerCase(),
+        route: (m.route || "").trim().toLowerCase(),
         dose: normDoseString(m.dose),
+        y: normNum(m.y),
         ay: normNum(m.ay),
         a: normNum(m.a),
         ap: normNum(m.ap),
         p: normNum(m.p),
         ip: normNum(m.ip),
         i: normNum(m.i),
-        y: normNum(m.y),
+        iy: normNum(m.iy),
         type: (m.type || "").trim(),
         period: (m.period || "").trim()
       };
@@ -864,7 +902,7 @@ Tehtävä:
       const prim = rows.find(r =>
         r.drugName === "primperan 10 mg/ml inj i.v." &&
         r.strength === "10 mg/ml" &&
-        r.form === "injektio i.v."
+        r.form === "injektio"
       );
       if (!prim) {
         showFeedback("Primperan 10 mg/ml inj i.v. puuttuu lääkelistalta.", false);
@@ -878,7 +916,7 @@ Tehtävä:
       const volt = rows.find(r =>
         r.drugName === "voltaren 75 mg inj i.m." &&
         r.strength === "75 mg" &&
-        r.form === "injektio i.m."
+        r.form === "injektio"
       );
       if (!volt) {
         showFeedback("Voltaren 75 mg inj i.m. puuttuu lääkelistalta.", false);
@@ -896,7 +934,7 @@ Tehtävä:
       const klex = rows.find(r =>
         r.drugName === "klexane 40 mg/0,4 ml inj s.c." &&
         r.strength === "40 mg/0,4 ml" &&
-        r.form === "injektio s.c."
+        r.form === "injektio"
       );
       if (!klex) {
         showFeedback("Klexane 40 mg/0,4 ml inj s.c. puuttuu lääkelistalta.", false);
@@ -928,25 +966,25 @@ Tehtävä:
       }
 
       switch (currentTaskIndex) {
-        case 0: { // peruslääkitys
+        case 0: {
           if (!checkBaseMeds(rows)) return false;
           showFeedback("Tehtävä 1 suoritettu oikein. Voit siirtyä seuraavaan määräykseen.", true);
           return true;
         }
-        case 1: { // peruslääkitys + Panadol
+        case 1: {
           if (!checkBaseMeds(rows)) return false;
           if (!checkPanadol(rows)) return false;
           showFeedback("Tehtävä 2 suoritettu oikein (peruslääkitys + parasetamoli). Voit siirtyä seuraavaan määräykseen.", true);
           return true;
         }
-        case 2: { // peruslääkitys + Panadol + i.v./i.m.
+        case 2: {
           if (!checkBaseMeds(rows)) return false;
           if (!checkPanadol(rows)) return false;
           if (!checkIVandIM(rows)) return false;
           showFeedback("Tehtävä 3 suoritettu oikein (lisätty Primperan i.v. ja Voltaren i.m. oikeilla annoksilla). Voit siirtyä seuraavaan määräykseen.", true);
           return true;
         }
-        case 3: { // kaikki + Klexane
+        case 3: {
           if (!checkBaseMeds(rows)) return false;
           if (!checkPanadol(rows)) return false;
           if (!checkIVandIM(rows)) return false;
@@ -975,11 +1013,12 @@ Tehtävä:
         medCode: null,
         type: "Jatkuva",
         period: "",
+        route: "",
         drugName: "",
         strength: "",
         form: "",
         dose: "",
-        ay: "", a: "", ap: "", p: "", ip: "", i: "", y: ""
+        y: "", ay: "", a: "", ap: "", p: "", ip: "", i: "", iy: ""
       });
       renderMedTable();
     });
@@ -1015,3 +1054,4 @@ Tehtävä:
   </script>
 </body>
 </html>
+
