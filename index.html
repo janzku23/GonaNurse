@@ -199,6 +199,12 @@
       background: #fee2e2 !important;
     }
 
+    /* Tauolla oleva rivi */
+    tbody tr.row-paused {
+      background: #e5e7eb !important;
+      color: #4b5563;
+    }
+
     tbody td {
       padding: 3px 4px;
       border-bottom: 1px solid rgba(148, 163, 184, 0.5);
@@ -373,7 +379,7 @@
               <th title="IP: 15.00–17.59">IP</th>
               <th title="I: 18.00–20.59">I</th>
               <th title="IY: 21.00–23.59">IY</th>
-              <th style="width: 5%;">&nbsp;</th>
+              <th style="width: 5%;">Lopeta</th>
             </tr>
           </thead>
           <tbody id="med-tbody"></tbody>
@@ -384,7 +390,8 @@
         Lääkkeen nimen valinta täyttää vahvuuden ja muodon automaattisesti, jos valmiste löytyy luettelosta.  
         Antoreitti (p.o., s.c., i.m., i.v.) valitaan käsin.  
         Y, AY, A, AP, P, IP, I, IY: merkitse tablettimäärä (esim. 1, 0,5) tai <strong>injektioilla myös vahvuus, esim. "40 mg"</strong>.  
-        Tarvittaviin injektiolääkkeisiin (Primperan, Voltaren) ja tarvittavaan parasetamoliin ei merkitä Y–IY -aikoja lainkaan (ruudut jätetään tyhjiksi).  
+        Tarvittaviin injektiolääkkeisiin (Primperan, Voltaren) ja tarvittavaan parasetamoliin ei merkitä Y–IY -aikoja lainkaan.  
+        Tyyppi <strong>Tauko</strong> harmaannuttaa rivin ja kertoo, että lääke on tauolla (esim. Primaspan Klexane-kuurin aikana).
       </div>
 
       <div style="margin-top: 10px; display: flex; gap: 8px; flex-wrap: wrap; align-items: center;">
@@ -420,8 +427,6 @@
         .replace(",", ".")
         .replace(/\s*/g, "");
     }
-
-    // ---------- LÄÄKEKATALOGI ----------
 
     const MEDICATIONS = [
       { code: "PANADOL_1G_TAB",   name: "Panadol 1 g tabletti",               strength: "1 g",             form: "tabletti" },
@@ -463,8 +468,6 @@
       "aspirin cardio 100 mg tabletti"
     ];
 
-    // ---------- PÄIVÄKOHTAISET TILANTEET ----------
-
     const TASKS = [
       {
         title: "Päivä 1 – Osastolle tulo, peruslääkitys ja lopetukset",
@@ -493,7 +496,7 @@ Osastolla käytössä:
 – Panadol 1 g tabletti
 – Panadol 500 mg tabletti
 
-Kun Klexane aloitetaan, Primaspan 100 mg tabletti pidetään tauolla (ei voimassa Klexanen aikana).
+Kun Klexane aloitetaan, Primaspan 100 mg tabletti pidetään tauolla (tyyppi Tauko Klexane-kuurin ajan).
 
 Muu säännöllinen lääkitys (Metforem, Amlodipin, Oxcarbazepin, suurennettu simvastatiiniannos ja NovoRapid tarvittaessa) jatkuu ennallaan.`
       },
@@ -510,7 +513,7 @@ Osastolla käytettävissä olevat valmisteet:
 – Primperan 10 mg/ml inj i.v.
 – Voltaren 75 mg inj i.m.
 
-Peruslääkitys, Klexane ja tarvittaessa parasetamoli sekä NovoRapid jatkuvat ennallaan. Primaspan on edelleen tauolla Klexanen ajan.`
+Peruslääkitys, Klexane ja tarvittaessa parasetamoli sekä NovoRapid jatkuvat ennallaan. Primaspan on edelleen tauolla Klexanen ajan (tyyppi Tauko).`
       },
       {
         title: "Päivä 4 – Klexane lopetetaan, Primaspan takaisin",
@@ -518,9 +521,9 @@ Peruslääkitys, Klexane ja tarvittaessa parasetamoli sekä NovoRapid jatkuvat e
 
 Klexane 40 mg s.c. 1 x 1 iltaisin lopetetaan.
 
-Primaspan 100 mg tabletti 1 x 1 p.o. aloitetaan uudelleen tauon jälkeen.
+Primaspan 100 mg tabletti 1 x 1 p.o. aloitetaan uudelleen tauon jälkeen (tyyppi Jatkuva).
 
-Muu lääkitys (Metforem, Amlodipin, Oxcarbazepin, suurennettu simvastatiiniannos, tarvittaessa parasetamoli, Primperan, Voltaren ja NovoRapid) jatkuu ennallaan.`
+Muu lääkitys (Metforem, Amlodipin, Oxcarbazepin, suurennettu simvastatiiniannos, tarvittava parasetamoli, Primperan, Voltaren ja NovoRapid) jatkuu ennallaan.`
       },
       {
         title: "Päivä 5 – Antibioottihoito (cefuroxim-kuuri, 12.12.2025–18.12.2025)",
@@ -537,8 +540,6 @@ Huom: Osastolla on saatavilla myös Cefuroxim 500 mg inj i.v., mutta tässä kä
 Klexane on lopetettu, Primaspan on jälleen käytössä, ja muu aiempi lääkitys jatkuu, ellei erikseen ole päätetty lopettaa.`
       }
     ];
-
-    // ---------- ALKUTILA – LÄÄKELISTA ----------
 
     const INITIAL_LIST = [
       {
@@ -631,8 +632,6 @@ Klexane on lopetettu, Primaspan on jälleen käytössä, ja muu aiempi lääkity
       }
     ];
 
-    // ---------- TAVOITE-ARVOT ----------
-
     const targetMetforem = {
       drugName: "metforem 500 mg tabletti",
       strength: "500 mg",
@@ -679,8 +678,6 @@ Klexane on lopetettu, Primaspan on jälleen käytössä, ja muu aiempi lääkity
       periodNorm: "12.12.2025-18.12.2025"
     };
 
-    // ---------- SOVELLUSLOGIIKKA ----------
-
     let meds = JSON.parse(JSON.stringify(INITIAL_LIST));
     let currentTaskIndex = 0;
     let lastCheckOK = false;
@@ -698,7 +695,6 @@ Klexane on lopetettu, Primaspan on jälleen käytössä, ja muu aiempi lääkity
     const datalistEl = document.getElementById("medications-list");
     const historyListEl = document.getElementById("history-list");
 
-    // Täytä datalist
     MEDICATIONS.forEach(med => {
       const opt = document.createElement("option");
       opt.value = med.name;
@@ -734,6 +730,10 @@ Klexane on lopetettu, Primaspan on jälleen käytössä, ja muu aiempi lääkity
         ensureScheduleFields(med);
         const tr = document.createElement("tr");
         tr.dataset.index = index;
+
+        if (med.type === "Tauko") {
+          tr.classList.add("row-paused");
+        }
 
         const createInputCell = (label, value, onInput, options = {}) => {
           const td = document.createElement("td");
@@ -774,7 +774,7 @@ Klexane on lopetettu, Primaspan on jälleen käytössä, ja muu aiempi lääkity
         tdType.setAttribute("data-label", "Tyyppi");
         const selType = document.createElement("select");
         selType.className = "med-input";
-        ["Jatkuva", "Tarvittava", "Määräaikainen"].forEach(optVal => {
+        ["Jatkuva", "Tarvittava", "Määräaikainen", "Tauko"].forEach(optVal => {
           const o = document.createElement("option");
           o.value = optVal;
           o.textContent = optVal;
@@ -790,78 +790,89 @@ Klexane on lopetettu, Primaspan on jälleen käytössä, ja muu aiempi lääkity
 
         // Aikaväli
         if (med.type === "Määräaikainen") {
-          const td = document.createElement("td");
-          td.setAttribute("data-label", "Aikaväli");
+          const nameLower = (med.drugName || "").trim().toLowerCase();
+          if (nameLower === targetCefuroxim.drugName) {
+            const td = document.createElement("td");
+            td.setAttribute("data-label", "Aikaväli");
 
-          const wrapper = document.createElement("div");
-          wrapper.style.display = "flex";
-          wrapper.style.flexDirection = "column";
-          wrapper.style.gap = "2px";
+            const wrapper = document.createElement("div");
+            wrapper.style.display = "flex";
+            wrapper.style.flexDirection = "column";
+            wrapper.style.gap = "2px";
 
-          const label = document.createElement("div");
-          label.style.fontSize = "0.65rem";
-          label.style.color = "#6b7280";
-          label.textContent = "Joulukuu 2025";
+            const label = document.createElement("div");
+            label.style.fontSize = "0.65rem";
+            label.style.color = "#6b7280";
+            label.textContent = "Joulukuu 2025";
 
-          const row = document.createElement("div");
-          row.style.display = "flex";
-          row.style.gap = "4px";
-          row.style.alignItems = "center";
+            const row = document.createElement("div");
+            row.style.display = "flex";
+            row.style.gap = "4px";
+            row.style.alignItems = "center";
 
-          let startDay = 12;
-          let endDay = 18;
-          if (med.period) {
-            const norm = med.period.replace(/\s/g, "").replace("–", "-");
-            const m = norm.match(/(\d{1,2})\.12\.2025-(\d{1,2})\.12\.2025/);
-            if (m) {
-              startDay = parseInt(m[1], 10);
-              endDay = parseInt(m[2], 10);
+            let startDay = 12;
+            let endDay = 18;
+            if (med.period) {
+              const norm = med.period.replace(/\s/g, "").replace("–", "-");
+              const m = norm.match(/(\d{1,2})\.12\.2025-(\d{1,2})\.12\.2025/);
+              if (m) {
+                startDay = parseInt(m[1], 10);
+                endDay = parseInt(m[2], 10);
+              }
             }
+
+            const startSel = document.createElement("select");
+            startSel.className = "med-input";
+            startSel.style.padding = "1px 4px";
+            const endSel = document.createElement("select");
+            endSel.className = "med-input";
+            endSel.style.padding = "1px 4px";
+
+            for (let d = 1; d <= 31; d++) {
+              const o1 = document.createElement("option");
+              o1.value = d;
+              o1.textContent = d;
+              if (d === startDay) o1.selected = true;
+              startSel.appendChild(o1);
+
+              const o2 = document.createElement("option");
+              o2.value = d;
+              o2.textContent = d;
+              if (d === endDay) o2.selected = true;
+              endSel.appendChild(o2);
+            }
+
+            function updatePeriod() {
+              const s = parseInt(startSel.value, 10);
+              const e = parseInt(endSel.value, 10);
+              meds[index].period = `${s}.12.2025–${e}.12.2025`;
+            }
+
+            startSel.addEventListener("change", updatePeriod);
+            endSel.addEventListener("change", updatePeriod);
+
+            const arrowSpan = document.createElement("span");
+            arrowSpan.textContent = "→";
+            arrowSpan.style.fontSize = "0.7rem";
+
+            row.appendChild(startSel);
+            row.appendChild(arrowSpan);
+            row.appendChild(endSel);
+
+            wrapper.appendChild(label);
+            wrapper.appendChild(row);
+            td.appendChild(wrapper);
+            tr.appendChild(td);
+          } else {
+            // Muut määräaikaiset: yksinkertainen tekstikenttä, ei pakotettua 12–18
+            tr.appendChild(
+              createInputCell(
+                "Aikaväli",
+                med.period || "",
+                (val) => { meds[index].period = val; }
+              )
+            );
           }
-
-          const startSel = document.createElement("select");
-          startSel.className = "med-input";
-          startSel.style.padding = "1px 4px";
-          const endSel = document.createElement("select");
-          endSel.className = "med-input";
-          endSel.style.padding = "1px 4px";
-
-          for (let d = 1; d <= 31; d++) {
-            const o1 = document.createElement("option");
-            o1.value = d;
-            o1.textContent = d;
-            if (d === startDay) o1.selected = true;
-            startSel.appendChild(o1);
-
-            const o2 = document.createElement("option");
-            o2.value = d;
-            o2.textContent = d;
-            if (d === endDay) o2.selected = true;
-            endSel.appendChild(o2);
-          }
-
-          function updatePeriod() {
-            const s = parseInt(startSel.value, 10);
-            const e = parseInt(endSel.value, 10);
-            meds[index].period = `${s}.12.2025–${e}.12.2025`;
-          }
-
-          startSel.addEventListener("change", updatePeriod);
-          endSel.addEventListener("change", updatePeriod);
-          updatePeriod();
-
-          const arrowSpan = document.createElement("span");
-          arrowSpan.textContent = "→";
-          arrowSpan.style.fontSize = "0.7rem";
-
-          row.appendChild(startSel);
-          row.appendChild(arrowSpan);
-          row.appendChild(endSel);
-
-          wrapper.appendChild(label);
-          wrapper.appendChild(row);
-          td.appendChild(wrapper);
-          tr.appendChild(td);
         } else {
           tr.appendChild(
             createInputCell(
@@ -955,14 +966,14 @@ Klexane on lopetettu, Primaspan on jälleen käytössä, ja muu aiempi lääkity
         tr.appendChild(createDoseCell("I", "i"));
         tr.appendChild(createDoseCell("IY", "iy"));
 
-        // Poisto
+        // Poista / Lopeta
         const tdDelete = document.createElement("td");
-        tdDelete.setAttribute("data-label", "Poista");
+        tdDelete.setAttribute("data-label", "Lopeta");
         tdDelete.style.textAlign = "center";
         const delBtn = document.createElement("button");
         delBtn.className = "btn-icon";
         delBtn.innerHTML = "🗑";
-        delBtn.title = "Poista rivi";
+        delBtn.title = "Lopeta / poista rivi";
         delBtn.addEventListener("click", () => {
           meds.splice(index, 1);
           renderMedTable();
@@ -1049,8 +1060,6 @@ Klexane on lopetettu, Primaspan on jälleen käytössä, ja muu aiempi lääkity
       return !row.y && !row.ay && !row.a && !row.ap && !row.p && !row.ip && !row.i && !row.iy;
     }
 
-    // ---------- TARKISTUSFUNKTIOt ----------
-
     function checkBaseMeds(rows) {
       // Metforem
       const met = rows.find(r => r.drugName === targetMetforem.drugName);
@@ -1067,7 +1076,7 @@ Klexane on lopetettu, Primaspan on jälleen käytössä, ja muu aiempi lääkity
         met.type !== targetMetforem.type ||
         met.route !== targetMetforem.route
       ) {
-        showFeedback("Metforem ei ole oikein. Tyyppi Jatkuva, antoreitti p.o., annos 1 x 2 ja AY–Y-jaossa 1 A ja 1 I.", false);
+        showFeedback("Metforem ei ole oikein. Tyyppi Jatkuva, antoreitti p.o., annos 1 x 2 ja ayossa 1 A ja 1 I.", false);
         return false;
       }
 
@@ -1109,25 +1118,30 @@ Klexane on lopetettu, Primaspan on jälleen käytössä, ja muu aiempi lääkity
     }
 
     function checkASAActive(rows) {
-      const asa = rows.find(r =>
-        ASA_NAMES.includes(r.drugName) &&
+      const asaRows = rows.filter(r => ASA_NAMES.includes(r.drugName));
+      if (asaRows.length === 0) {
+        showFeedback("ASA-profylaksia (Primaspan 100 mg tai Aspirin Cardio 100 mg) puuttuu, vaikka sen pitäisi olla käytössä.", false);
+        return false;
+      }
+      const active = asaRows.find(r =>
+        r.type === "Jatkuva" &&
+        r.route === targetASA.route &&
         r.strength === targetASA.strength.toLowerCase() &&
         r.form === targetASA.form.toLowerCase() &&
-        r.dose === targetASA.dose &&
-        r.type === targetASA.type &&
-        r.route === targetASA.route
+        r.dose === targetASA.dose
       );
-      if (!asa) {
-        showFeedback("ASA-profylaksia (Primaspan 100 mg tai Aspirin Cardio 100 mg, 1 x 1 p.o., Jatkuva) puuttuu tai on väärin.", false);
+      if (!active) {
+        showFeedback("ASA-profylaksia ei ole oikein. Tyyppi Jatkuva, antoreitti p.o., annos 1 x 1.", false);
         return false;
       }
       return true;
     }
 
     function checkASASuspended(rows) {
-      const asa = rows.find(r => ASA_NAMES.includes(r.drugName));
-      if (asa) {
-        showFeedback("Primaspan/Aspirin tulee pitää tauolla Klexanen aikana – sen ei pitäisi näkyä lääkelistalla.", false);
+      const asaRows = rows.filter(r => ASA_NAMES.includes(r.drugName));
+      const active = asaRows.find(r => r.type === "Jatkuva");
+      if (active) {
+        showFeedback("Primaspan/Aspirin tulee olla tauolla Klexanen aikana (tyyppi Tauko tai ei riviä lainkaan).", false);
         return false;
       }
       return true;
@@ -1139,7 +1153,7 @@ Klexane on lopetettu, Primaspan on jälleen käytössä, ja muu aiempi lääkity
 
       const hasOld20 = simva20rows.some(r => r.dose === normDoseString("1 x 1"));
 
-      const ok20up = simva20rows.some(r => {
+      const ok20evening = simva20rows.some(r => {
         const dose20evening = (r.dose === normDoseString("2 x 1") && r.i === "2");
         const dose20split = (r.dose === normDoseString("1 x 2") && r.a === "1" && r.i === "1");
         return (dose20evening || dose20split) &&
@@ -1154,12 +1168,12 @@ Klexane on lopetettu, Primaspan on jälleen käytössä, ja muu aiempi lääkity
         r.route === "p.o."
       );
 
-      if (!ok20up && !ok40) {
-        showFeedback("Simvastatiini ei ole oikein. Hyväksytään joko:\n• Simvastatin Orion 20 mg tabl. 2 x 1 (I-sarakkeessa 2) TAI 1 x 2 (A=1, I=1)\nTAI\n• Simvastatin Orion 40 mg tabl. 1 x 1 (I-sarakkeessa 1)\nTyyppi Jatkuva, antoreitti p.o.", false);
+      if (!ok20evening && !ok40) {
+        showFeedback("Simvastatiini ei ole oikein. Hyväksytään joko 20 mg 2 x 1 (I=2) / 1 x 2 (A=1, I=1) TAI 40 mg 1 x 1 (I=1).", false);
         return false;
       }
       if (hasOld20) {
-        showFeedback("Simvastatin Orion 20 mg 1 x 1 ei saa enää olla listalla (annos on nostettu). Muuta annos tai vaihda 40 mg valmisteeseen.", false);
+        showFeedback("Simvastatin Orion 20 mg 1 x 1 ei saa olla enää listalla (annos nostettu).", false);
         return false;
       }
       return true;
@@ -1208,7 +1222,7 @@ Klexane on lopetettu, Primaspan on jälleen käytössä, ja muu aiempi lääkity
           "• Panadol 1 g TAI Panadol 500 mg tabletti\n" +
           "• Tyyppi Tarvittava, antoreitti p.o.\n" +
           "• Annostus 1 x 1–3\n" +
-          "• Y–IY-aikaruutujen tulee olla tyhjät (tarvittava lääkitys).",
+          "• Y–IY-aikaruutujen tulee olla tyhjät.",
           false
         );
         return false;
@@ -1232,7 +1246,7 @@ Klexane on lopetettu, Primaspan on jälleen käytössä, ja muu aiempi lääkity
         prim.type !== "Tarvittava" ||
         prim.route !== "i.v."
       ) {
-        showFeedback("Primperan ei ole oikein. Tyyppi Tarvittava, antoreitti i.v., annos 1 x 1–3.", false);
+        showFeedback("Primperan ei ole oikein. Tyyppi Tarvittava, antoreitti i.v., annos 1 x 1–3. Y–IY tyhjät.", false);
         return false;
       }
       if (!scheduleIsEmpty(prim)) {
@@ -1254,7 +1268,7 @@ Klexane on lopetettu, Primaspan on jälleen käytössä, ja muu aiempi lääkity
         volt.type !== "Tarvittava" ||
         volt.route !== "i.m."
       ) {
-        showFeedback("Voltaren ei ole oikein. Tyyppi Tarvittava, antoreitti i.m., annos 1 x 1–2.", false);
+        showFeedback("Voltaren ei ole oikein. Tyyppi Tarvittava, antoreitti i.m., annos 1 x 1–2. Y–IY tyhjät.", false);
         return false;
       }
       if (!scheduleIsEmpty(volt)) {
@@ -1324,10 +1338,8 @@ Klexane on lopetettu, Primaspan on jälleen käytössä, ja muu aiempi lääkity
       return true;
     }
 
-    // ---------- RIVIKOHTAINEN ARVIO ----------
-
     function evaluateRow(row) {
-      // Lopetetut lääkkeet
+      // Lopetetut
       if (row.drugName === "plavix 75 mg tabletti" || row.drugName === "burana 400 mg tabletti") {
         return "error";
       }
@@ -1372,17 +1384,18 @@ Klexane on lopetettu, Primaspan on jälleen käytössä, ja muu aiempi lääkity
 
       // ASA (Primaspan / Aspirin)
       if (ASA_NAMES.includes(row.drugName)) {
-        const asaOk = (
+        const asaBaseOk =
           row.strength === targetASA.strength.toLowerCase() &&
           row.form === targetASA.form.toLowerCase() &&
           row.dose === targetASA.dose &&
-          row.type === targetASA.type &&
-          row.route === targetASA.route
-        );
+          row.route === targetASA.route;
         if (currentTaskIndex === 0 || currentTaskIndex === 3 || currentTaskIndex === 4) {
-          return asaOk ? "ok" : "error";
+          // ASA käytössä
+          if (asaBaseOk && row.type === "Jatkuva") return "ok";
+          return "error";
         } else {
-          // Päivä 2–3: ASA pitäisi olla tauolla
+          // Päivä 2–3: ASA tauolla
+          if (asaBaseOk && row.type === "Tauko") return "ok";
           return "error";
         }
       }
@@ -1471,7 +1484,6 @@ Klexane on lopetettu, Primaspan on jälleen käytössä, ja muu aiempi lääkity
           if (row.type === "Jatkuva" && row.route === "s.c." && okI) return "ok";
           return "error";
         } else {
-          // Päivä 1,4,5: pitäisi olla lopetettu
           return "error";
         }
       }
@@ -1495,6 +1507,10 @@ Klexane on lopetettu, Primaspan on jälleen käytössä, ja muu aiempi lääkity
     function colorRows(rows) {
       Array.from(tbody.children).forEach(tr => {
         tr.classList.remove("row-ok", "row-error");
+        if (tr.classList.contains("row-paused")) {
+          // Tauko-rivejä ei väritetä vihreäksi/punaiseksi
+          return;
+        }
         const idx = parseInt(tr.dataset.index, 10);
         const row = rows[idx];
         if (!row) return;
@@ -1503,8 +1519,6 @@ Klexane on lopetettu, Primaspan on jälleen käytössä, ja muu aiempi lääkity
         if (status === "error") tr.classList.add("row-error");
       });
     }
-
-    // ---------- TEHTÄVÄKOHTAINEN TARKISTUS ----------
 
     function checkCurrentTask() {
       const rows = meds
@@ -1581,8 +1595,6 @@ Klexane on lopetettu, Primaspan on jälleen käytössä, ja muu aiempi lääkity
       return ok;
     }
 
-    // ---------- TAPAHTUMAT ----------
-
     addMedBtn.addEventListener("click", () => {
       meds.push({
         medCode: null,
@@ -1616,12 +1628,14 @@ Klexane on lopetettu, Primaspan on jälleen käytössä, ja muu aiempi lääkity
       }
     });
 
-    // ---------- INIT ----------
+    function renderHistoryInitial() {
+      renderHistory();
+    }
 
     (function init() {
       renderTask();
       renderAll();
-      renderHistory();
+      renderHistoryInitial();
     })();
   </script>
 </body>
