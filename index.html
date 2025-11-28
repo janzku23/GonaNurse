@@ -351,7 +351,7 @@
         Lääkkeen nimen valinta täyttää vahvuuden ja muodon automaattisesti, jos valmiste löytyy luettelosta.  
         Antoreitti (p.o., s.c., i.m., i.v.) valitaan käsin.  
         Y, AY, A, AP, P, IP, I, IY: merkitse tablettimäärä (esim. 1, 0,5) tai <strong>injektioilla myös vahvuus, esim. "40 mg"</strong>.  
-        Huom: jos syötät pelkän luvun (esim. 40) vahvuutena aikataulukenttään, tulee mukana olla myös yksikkö (mg tai g) niissä tapauksissa, joissa tehtävä sitä vaatii.
+        Tarvittaviin injektiolääkkeisiin (Primperan, Voltaren) ei merkitä Y–IY -aikoja lainkaan.  
       </div>
 
       <div style="margin-top: 10px; display: flex; gap: 8px; flex-wrap: wrap; align-items: center;">
@@ -380,7 +380,7 @@
       return (s || "")
         .toLowerCase()
         .replace(",", ".")
-        .replace(/\s*/g, ""); // poistaa välilyönnit → "1x1", "0.5x1-3vrk"
+        .replace(/\s*/g, ""); // "1x1", "0.5x1-3"
     }
 
     // ---------- LÄÄKEKATALOGI ----------
@@ -398,7 +398,8 @@
       { code: "ATORVA_40",        name: "Atorvastatin Krka 40 mg tabl.",      strength: "40 mg",       form: "tabletti" },
       { code: "PRIMPERAN_IV",     name: "Primperan 10 mg/ml inj i.v.",        strength: "10 mg/ml",    form: "injektio" },
       { code: "VOLTAREN_IM",      name: "Voltaren 75 mg inj i.m.",            strength: "75 mg",       form: "injektio" },
-      { code: "KLEXANE_40_SC",    name: "Klexane 40 mg/0,4 ml inj s.c.",      strength: "40 mg/0,4 ml",form: "injektio" }
+      { code: "KLEXANE_40_SC",    name: "Klexane 40 mg/0,4 ml inj s.c.",      strength: "40 mg/0,4 ml",form: "injektio" },
+      { code: "CEFUR_500_TAB",    name: "Cefuroxim 500 mg tabletti",          strength: "500 mg",      form: "tabletti" }
     ];
 
     // ---------- TEHTÄVÄT ----------
@@ -461,8 +462,8 @@ Tehtävä:
 Potilaalla on esiintynyt leikkauksen jälkeen pahoinvointia ja ajoittaista kovempaa kipua.
 Lisätään tarvittaessa käytettävät injektiolääkkeet:
 
-• Primperan 10 mg i.v. tarvittaessa pahoinvointiin, 1 x 1–3 vrk
-• Voltaren 75 mg i.m. tarvittaessa kipuun, 1 x 1–2 vrk
+• Primperan 10 mg i.v. tarvittaessa pahoinvointiin, 1 x 1–3
+• Voltaren 75 mg i.m. tarvittaessa kipuun, 1 x 1–2
 
 Osastolla käytettävissä olevat valmisteet:
 • Primperan 10 mg/ml inj i.v.
@@ -472,13 +473,12 @@ Tehtävä:
 1. Peruslääkitys ja parasetamoli ovat edelleen voimassa ja oikein.
 2. Lisää lääkelistalle:
    – Primperan 10 mg/ml inj i.v., tyyppi "Tarvittava"
-     • annostus: 1 x 1–3 vrk (myös "1x1-3vrk" hyväksytään)
+     • annostus: 1 x 1–3 (myös "1x1-3" hyväksytään)
      • antoreitti: i.v.
    – Voltaren 75 mg inj i.m., tyyppi "Tarvittava"
-     • annostus: 1 x 1–2 vrk (myös "1x1-2vrk" hyväksytään)
+     • annostus: 1 x 1–2 (myös "1x1-2" hyväksytään)
      • antoreitti: i.m.
-3. AY–Y-jakoa ei vaadita tarkasti näille tarvittaessa injektioille tässä tehtävässä,
-   mutta niiden tulee löytyä listalta oikealla nimellä, vahvuudella, muodolla ja antoreitillä.`
+3. Tarvittaville Primperan- ja Voltaren-injektioille ei merkitä Y–IY-aikoja (ruudut tyhjinä).`
       },
       {
         title: "Tehtävä 4 – Uusi määräys: tromboosiprofylaksia s.c. (päivä 4)",
@@ -500,7 +500,28 @@ Tehtävä:
      • "1" tai
      • "40 mg" (tai vastaava, jossa on aina mg- tai g-yksikkö mukana, ei pelkkä numero).
    – antoreitti: s.c.
-3. Tarkista tehtävä. Kun kaikki on oikein, koko harjoitussarja on suoritettu.`
+3. Tarkista tehtävä. Kun kaikki on oikein, voit siirtyä viimeiseen tehtävään.`
+      },
+      {
+        title: "Tehtävä 5 – Määräaikainen antibiootti (cefuroxim) (päivä 5 / 12.12.2025)",
+        description: `Lääkärin teksti (päivä 5):
+
+Tänään on 12.12.2025.
+Potilaalle aloitetaan määräaikainen antibioottihoito:
+
+• Cefuroxim 500 mg tabletti p.o. 1 x 2, 7 vuorokauden kuuri tästä aamusta lähtien.
+
+Tehtävä:
+1. Lisää lääkelistalle Cefuroxim 500 mg tabletti.
+2. Merkitse:
+   – tyyppi: "Määräaikainen"
+   – antoreitti: p.o.
+   – annostus esimerkiksi: "1 x 2"
+3. Aikaväli:
+   – kuuri kestää 7 vrk: 12.12.2025–18.12.2025
+   – valitse aikaväli Joulukuu 2025 -valikosta niin, että
+     alkupäivä = 12 ja loppupäivä = 18.
+4. Y–IY-aikoja ei tarkisteta tämän antibiootin osalta, mutta aikavälin tulee olla oikein (12.–18.12.2025).`
       }
     ];
 
@@ -514,7 +535,9 @@ Tehtävä:
       form: "tabletti",
       dose: normDoseString("1 x 2"),
       a: "1",
-      i: "1"
+      i: "1",
+      type: "Jatkuva",
+      route: "p.o."
     };
 
     const targetMarevan = {
@@ -522,13 +545,17 @@ Tehtävä:
       strength: "3 mg",
       form: "tabletti",
       dose: normDoseString("1 x 1"),
-      i: "1"
+      i: "1",
+      type: "Jatkuva",
+      route: "p.o."
     };
 
     const targetLantus = {
       drugName: "lantus solostar 100 iu/ml inj s.c.",
       strength: "100 iu/ml",
-      form: "injektio"
+      form: "injektio",
+      type: "Jatkuva",
+      route: "s.c."
     };
 
     const targetPanadol1g = {
@@ -536,7 +563,9 @@ Tehtävä:
       strength: "1 g",
       form: "tabletti",
       dose: normDoseString("0,5 x 1"),
-      a: "0.5"
+      a: "0.5",
+      type: "Tarvittava",
+      route: "p.o."
     };
 
     const targetPanadol500 = {
@@ -544,7 +573,18 @@ Tehtävä:
       strength: "500 mg",
       form: "tabletti",
       dose: normDoseString("1 x 1"),
-      a: "1"
+      a: "1",
+      type: "Tarvittava",
+      route: "p.o."
+    };
+
+    const targetCefuroxim = {
+      drugName: "cefuroxim 500 mg tabletti",
+      strength: "500 mg",
+      form: "tabletti",
+      type: "Määräaikainen",
+      route: "p.o.",
+      periodNorm: "12.12.2025-18.12.2025"
     };
 
     // ---------- SOVELLUSLOGIIKKA ----------
@@ -635,7 +675,7 @@ Tehtävä:
           return td;
         };
 
-        // Tyyppi (Jatkuva / Tarvittava / Määräaikainen)
+        // Tyyppi
         const tdType = document.createElement("td");
         tdType.setAttribute("data-label", "Tyyppi");
         const selType = document.createElement("select");
@@ -649,21 +689,99 @@ Tehtävä:
         });
         selType.addEventListener("change", e => {
           meds[index].type = e.target.value;
-          renderMedTable(); // päivittää aikaväli-kentän readOnly-tilan
+          // Tyypin muutos vaikuttaa aikaväli-soluun → uudelleenrender
+          renderMedTable();
         });
         tdType.appendChild(selType);
         tr.appendChild(tdType);
 
-        // Aikaväli – muokattavissa vain Määräaikainen
-        const isPeriodEditable = med.type === "Määräaikainen";
-        tr.appendChild(
-          createInputCell(
-            "Aikaväli",
-            med.period || "",
-            (val) => { meds[index].period = val; },
-            { readonly: !isPeriodEditable, disabled: !isPeriodEditable }
-          )
-        );
+        // Aikaväli:
+        if (med.type === "Määräaikainen") {
+          const td = document.createElement("td");
+          td.setAttribute("data-label", "Aikaväli");
+
+          const wrapper = document.createElement("div");
+          wrapper.style.display = "flex";
+          wrapper.style.flexDirection = "column";
+          wrapper.style.gap = "2px";
+
+          const label = document.createElement("div");
+          label.style.fontSize = "0.65rem";
+          label.style.color = "#6b7280";
+          label.textContent = "Joulukuu 2025";
+
+          const row = document.createElement("div");
+          row.style.display = "flex";
+          row.style.gap = "4px";
+          row.style.alignItems = "center";
+
+          // Yritetään lukea olemassa oleva periodi
+          let startDay = 12;
+          let endDay = 18;
+          if (med.period) {
+            const norm = med.period.replace(/\s/g, "").replace("–", "-");
+            const m = norm.match(/(\d{1,2})\.12\.2025-(\d{1,2})\.12\.2025/);
+            if (m) {
+              startDay = parseInt(m[1], 10);
+              endDay = parseInt(m[2], 10);
+            }
+          }
+
+          const startSel = document.createElement("select");
+          startSel.className = "med-input";
+          startSel.style.padding = "1px 4px";
+          const endSel = document.createElement("select");
+          endSel.className = "med-input";
+          endSel.style.padding = "1px 4px";
+
+          for (let d = 1; d <= 31; d++) {
+            const o1 = document.createElement("option");
+            o1.value = d;
+            o1.textContent = d;
+            if (d === startDay) o1.selected = true;
+            startSel.appendChild(o1);
+
+            const o2 = document.createElement("option");
+            o2.value = d;
+            o2.textContent = d;
+            if (d === endDay) o2.selected = true;
+            endSel.appendChild(o2);
+          }
+
+          function updatePeriod() {
+            const s = parseInt(startSel.value, 10);
+            const e = parseInt(endSel.value, 10);
+            meds[index].period = `${s}.12.2025–${e}.12.2025`;
+          }
+
+          startSel.addEventListener("change", updatePeriod);
+          endSel.addEventListener("change", updatePeriod);
+          // Alustava päivitys
+          updatePeriod();
+
+          const arrowSpan = document.createElement("span");
+          arrowSpan.textContent = "→";
+          arrowSpan.style.fontSize = "0.7rem";
+
+          row.appendChild(startSel);
+          row.appendChild(arrowSpan);
+          row.appendChild(endSel);
+
+          wrapper.appendChild(label);
+          wrapper.appendChild(row);
+          td.appendChild(wrapper);
+          tr.appendChild(td);
+        } else {
+          // Jatkuva / Tarvittava: aikaväli ei muokattavissa
+          tr.appendChild(
+            createInputCell(
+              "Aikaväli",
+              med.period || "",
+              () => {},
+              { readonly: true, disabled: true }
+            )
+          );
+        }
 
         // Lääke
         const drugCell = createInputCell(
@@ -710,7 +828,7 @@ Tehtävä:
           )
         );
 
-        // Antoreitti (p.o., s.c., i.m., i.v., muu)
+        // Antoreitti
         const tdRoute = document.createElement("td");
         tdRoute.setAttribute("data-label", "Antoreitti");
         const selRoute = document.createElement("select");
@@ -807,6 +925,10 @@ Tehtävä:
       }
     }
 
+    function scheduleIsEmpty(row) {
+      return !row.y && !row.ay && !row.a && !row.ap && !row.p && !row.ip && !row.i && !row.iy;
+    }
+
     // ---------- TARKISTUSFUNKTIOt ----------
 
     function checkBaseMeds(rows) {
@@ -821,9 +943,11 @@ Tehtävä:
         met.form !== targetMetforem.form.toLowerCase() ||
         met.dose !== targetMetforem.dose ||
         met.a !== targetMetforem.a ||
-        met.i !== targetMetforem.i
+        met.i !== targetMetforem.i ||
+        met.type !== targetMetforem.type ||
+        met.route !== targetMetforem.route
       ) {
-        showFeedback("Metforem ei ole oikein. Sen tulee olla 1 x 2 (myös 1x2 käy) ja AY–Y-jaossa 1 A ja 1 I.", false);
+        showFeedback("Metforem ei ole oikein. Tyyppi: Jatkuva, antoreitti: p.o., annos 1 x 2 (1x2) ja AY–Y-jaossa 1 A ja 1 I.", false);
         return false;
       }
 
@@ -837,9 +961,11 @@ Tehtävä:
         mare.strength !== targetMarevan.strength.toLowerCase() ||
         mare.form !== targetMarevan.form.toLowerCase() ||
         mare.dose !== targetMarevan.dose ||
-        mare.i !== targetMarevan.i
+        mare.i !== targetMarevan.i ||
+        mare.type !== targetMarevan.type ||
+        mare.route !== targetMarevan.route
       ) {
-        showFeedback("Marevan ei ole oikein. Sen tulee olla 1 x 1 (1x1) iltaisin ja AY–Y-jaossa 1 I.", false);
+        showFeedback("Marevan ei ole oikein. Tyyppi: Jatkuva, antoreitti: p.o., annos 1 x 1 (1x1) ja AY–Y-jaossa 1 I.", false);
         return false;
       }
 
@@ -851,9 +977,11 @@ Tehtävä:
       }
       if (
         lantus.strength !== targetLantus.strength.toLowerCase() ||
-        lantus.form !== targetLantus.form.toLowerCase()
+        lantus.form !== targetLantus.form.toLowerCase() ||
+        lantus.type !== targetLantus.type ||
+        lantus.route !== targetLantus.route
       ) {
-        showFeedback("Lantus ei ole oikein (vahvuus tai muoto ei täsmää).", false);
+        showFeedback("Lantus ei ole oikein (vahvuus, muoto, tyyppi tai antoreitti ei täsmää). Tyyppi Jatkuva, antoreitti s.c.", false);
         return false;
       }
 
@@ -874,19 +1002,23 @@ Tehtävä:
         p.drugName === targetPanadol1g.drugName &&
         p.strength === targetPanadol1g.strength.toLowerCase() &&
         p.dose === targetPanadol1g.dose &&
-        p.a === targetPanadol1g.a
+        p.a === targetPanadol1g.a &&
+        p.type === targetPanadol1g.type &&
+        p.route === targetPanadol1g.route
       );
 
       const ok500 = pans.some(p =>
         p.drugName === targetPanadol500.drugName &&
         p.strength === targetPanadol500.strength.toLowerCase() &&
         p.dose === targetPanadol500.dose &&
-        p.a === targetPanadol500.a
+        p.a === targetPanadol500.a &&
+        p.type === targetPanadol500.type &&
+        p.route === targetPanadol500.route
       );
 
       if (!ok1g && !ok500) {
         showFeedback(
-          "Panadol ei ole oikein. Hyväksytään joko:\n" +
+          "Panadol ei ole oikein. Sen tulee olla tyypiltään Tarvittava, antoreitti p.o. ja joko:\n" +
           "• Panadol 1 g tabletti, annos 0,5 x 1 (0,5x1) ja AY–Y-jaossa 0,5 A\n" +
           "  TAI\n" +
           "• Panadol 500 mg tabletti, annos 1 x 1 (1x1) ja AY–Y-jaossa 1 A.",
@@ -908,8 +1040,16 @@ Tehtävä:
         showFeedback("Primperan 10 mg/ml inj i.v. puuttuu lääkelistalta.", false);
         return false;
       }
-      if (prim.dose !== normDoseString("1 x 1-3 vrk")) {
-        showFeedback("Primperan annostus ei ole oikein. Sen tulee olla 1 x 1–3 vrk (myös 1x1-3vrk hyväksytään).", false);
+      if (
+        prim.dose !== normDoseString("1 x 1-3") ||
+        prim.type !== "Tarvittava" ||
+        prim.route !== "i.v."
+      ) {
+        showFeedback("Primperan ei ole oikein. Tyyppi Tarvittava, antoreitti i.v., annos 1 x 1–3 (1x1-3).", false);
+        return false;
+      }
+      if (!scheduleIsEmpty(prim)) {
+        showFeedback("Primperan on tarvittava injektio – jätä Y–IY-aikaruudut tyhjiksi.", false);
         return false;
       }
 
@@ -922,8 +1062,16 @@ Tehtävä:
         showFeedback("Voltaren 75 mg inj i.m. puuttuu lääkelistalta.", false);
         return false;
       }
-      if (volt.dose !== normDoseString("1 x 1-2 vrk")) {
-        showFeedback("Voltaren annostus ei ole oikein. Sen tulee olla 1 x 1–2 vrk (myös 1x1-2vrk hyväksytään).", false);
+      if (
+        volt.dose !== normDoseString("1 x 1-2") ||
+        volt.type !== "Tarvittava" ||
+        volt.route !== "i.m."
+      ) {
+        showFeedback("Voltaren ei ole oikein. Tyyppi Tarvittava, antoreitti i.m., annos 1 x 1–2 (1x1-2).", false);
+        return false;
+      }
+      if (!scheduleIsEmpty(volt)) {
+        showFeedback("Voltaren on tarvittava injektio – jätä Y–IY-aikaruudut tyhjiksi.", false);
         return false;
       }
 
@@ -941,14 +1089,40 @@ Tehtävä:
         return false;
       }
 
-      const iVal = (klex.i || "").trim().toLowerCase();
+      if (klex.type !== "Jatkuva" || klex.route !== "s.c.") {
+        showFeedback("Klexanen tulee olla tyypiltään Jatkuva ja antoreitti s.c.", false);
+        return false;
+      }
 
-      // Hyväksytään joko "1" TAI teksti, jossa on mg- tai g-yksikkö mukana (esim. "40 mg", "40mg").
+      const iVal = (klex.i || "").trim().toLowerCase();
       if (!(iVal === "1" || /mg|g/.test(iVal))) {
         showFeedback("Klexanen I-sarakkeessa tulee olla joko \"1\" TAI vahvuus, jossa on mg- tai g-yksikkö (esim. \"40 mg\").", false);
         return false;
       }
 
+      return true;
+    }
+
+    function checkCefuroxim(rows) {
+      const cef = rows.find(r =>
+        r.drugName === targetCefuroxim.drugName &&
+        r.strength === targetCefuroxim.strength.toLowerCase() &&
+        r.form === targetCefuroxim.form.toLowerCase()
+      );
+      if (!cef) {
+        showFeedback("Cefuroxim 500 mg tabletti puuttuu lääkelistalta.", false);
+        return false;
+      }
+      if (cef.type !== targetCefuroxim.type || cef.route !== targetCefuroxim.route) {
+        showFeedback("Cefuroxim tulee merkitä tyypiksi Määräaikainen ja antoreitiksi p.o.", false);
+        return false;
+      }
+      const normPeriod = cef.period.replace(/\s/g, "").replace("–", "-");
+      if (normPeriod !== targetCefuroxim.periodNorm) {
+        showFeedback("Cefuroxim-kuurin aikavälin tulee olla 12.12.2025–18.12.2025 (valitse Joulukuu 2025 -valikosta 12 → 18).", false);
+        return false;
+      }
+      // annosta ei tarkisteta tiukasti, riittää että kuuri löytyy oikein määräaikaisena
       return true;
     }
 
@@ -981,7 +1155,7 @@ Tehtävä:
           if (!checkBaseMeds(rows)) return false;
           if (!checkPanadol(rows)) return false;
           if (!checkIVandIM(rows)) return false;
-          showFeedback("Tehtävä 3 suoritettu oikein (lisätty Primperan i.v. ja Voltaren i.m. oikeilla annoksilla). Voit siirtyä seuraavaan määräykseen.", true);
+          showFeedback("Tehtävä 3 suoritettu oikein (Primperan i.v. ja Voltaren i.m. tarvittavana ilman Y–IY-aikoja). Voit siirtyä seuraavaan.", true);
           return true;
         }
         case 3: {
@@ -989,7 +1163,16 @@ Tehtävä:
           if (!checkPanadol(rows)) return false;
           if (!checkIVandIM(rows)) return false;
           if (!checkKlexane(rows)) return false;
-          showFeedback("Tehtävä 4 ja koko harjoitussarja suoritettu oikein. Hienoa työtä! ✅", true);
+          showFeedback("Tehtävä 4 suoritettu oikein (Klexane lisätty oikein). Voit siirtyä antibioottikuuri-tehtävään.", true);
+          return true;
+        }
+        case 4: {
+          if (!checkBaseMeds(rows)) return false;
+          if (!checkPanadol(rows)) return false;
+          if (!checkIVandIM(rows)) return false;
+          if (!checkKlexane(rows)) return false;
+          if (!checkCefuroxim(rows)) return false;
+          showFeedback("Tehtävä 5 ja koko harjoitussarja suoritettu oikein. Hienoa työtä! ✅", true);
           return true;
         }
         default:
@@ -1054,4 +1237,5 @@ Tehtävä:
   </script>
 </body>
 </html>
+
 
