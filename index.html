@@ -362,10 +362,10 @@
           <thead>
             <tr>
               <th style="width: 8%;">Tyyppi</th>
-              <th style="width: 9%;">Aikaväli</th>
+              <th style="width: 11%;">Aikaväli</th>
               <th style="width: 16%;">Lääke</th>
-              <th style="width: 8%;">Vahvuus</th>
-              <th style="width: 8%;">Muoto</th>
+              <th style="width: 7%;">Vahvuus</th>
+              <th style="width: 7%;">Muoto</th>
               <th style="width: 7%;">Antoreitti</th>
               <th style="width: 8%;">Annostus</th>
               <th title="Y: 00.00–02.59">Y</th>
@@ -387,8 +387,8 @@
         Lääkkeen nimen valinta täyttää vahvuuden ja muodon automaattisesti, jos valmiste löytyy luettelosta.  
         Antoreitti (p.o., s.c., i.m., i.v.) valitaan käsin.  
         Y, AY, A, AP, P, IP, I, IY: merkitse tablettimäärä (esim. 1, 0,5) tai <strong>injektioilla myös vahvuus, esim. "40 mg"</strong>.  
-        Tarvittaviin injektiolääkkeisiin (Primperan, Voltaren) ja tarvittavaan parasetamoliin ei merkitä Y–IY -aikoja lainkaan.  
-        Tyyppi <strong>Tauko</strong> harmaannuttaa rivin ja kertoo, että lääke on tauolla (esim. Primaspan Klexane-kuurin aikana).
+        Tarvittaviin injektiolääkkeisiin.
+        Tyyppi <strong>Tauko</strong> harmaannuttaa rivin ja kertoo, että lääke on tauolla.
       </div>
 
       <div style="margin-top: 10px; display: flex; gap: 8px; flex-wrap: wrap; align-items: center;">
@@ -447,13 +447,13 @@
       { code: "PRIMASPAN_100",    name: "Primaspan 100 mg tabletti",          strength: "100 mg",          form: "tabletti" },
       { code: "ASPIRIN_100",      name: "Aspirin Cardio 100 mg tabletti",     strength: "100 mg",          form: "tabletti" },
 
-      { code: "PRIMPERAN_IV",     name: "Primperan 10 mg/ml inj i.v.",        strength: "10 mg/ml",        form: "injektio" },
-      { code: "VOLTAREN_IM",      name: "Voltaren 75 mg inj i.m.",            strength: "75 mg",           form: "injektio" },
+      { code: "PRIMPERAN_IV",     name: "Primperan 10 mg/ml .",        strength: "10 mg/ml",        form: "injektio" },
+      { code: "VOLTAREN_IM",      name: "Voltaren 75 mg inj..",            strength: "75 mg",           form: "injektio" },
 
-      { code: "KLEXANE_40_SC",    name: "Klexane 40 mg/0,4 ml inj s.c.",      strength: "40 mg/0,4 ml",    form: "injektio" },
+      { code: "KLEXANE_40_SC",    name: "Klexane 40 mg/0,4 ml.",      strength: "40 mg/0,4 ml",    form: "injektio" },
 
       { code: "CEFUR_500_TAB",    name: "Cefuroxim 500 mg tabletti",          strength: "500 mg",          form: "tabletti" },
-      { code: "CEFUR_500_IV",     name: "Cefuroxim 500 mg inj i.v.",          strength: "500 mg",          form: "injektio" },
+      { code: "CEFUR_500_IV",     name: "Cefuroxim 500 mg kuiva-aine.",          strength: "500 mg",          form: "injektio" },
 
       { code: "PLAVIX_75_TAB",    name: "Plavix 75 mg tabletti",              strength: "75 mg",           form: "tabletti" }
     ];
@@ -469,13 +469,7 @@
         description: `72-vuotias potilas, jolla taustalla tyypin 2 diabetes, verenpainetauti ja paikallisalkuinen epilepsia. Osastolla verenpaine- ja verensokeriseuranta, laitetaan myös telemetriaseuranta.
 
 Siirtyy nyt vuodeosastolle. Osastolääkityksenä jatketaan:
-– Metforem 500 mg tabletti 1 x 2 p.o. (aamu ja ilta)
-– Amlodipin 5 mg tabletti 1 x 1 p.o. (aamu)
-– Oxcarbazepin Orion 300 mg tabletti 1 x 2 p.o. (aamu ja ilta)
-– Primaspan 100 mg tabletti 1 x 1 p.o. (aamu)
-– NovoRapid 100 IU/ml inj s.c. tarvittaessa aterian yhteydessä, 1 x 1–3
-– Simvastatin Orion 20 mg tabl. nostetaan annokseen 40 mg iltaisin (joko 20 mg 2 x 1 iltaisin TAI Simvastatin Orion 40 mg 1 x 1 iltaisin)
-
+– Metforem 500 mg tabletti 1 x 2 p.o., Amlodipin 5 mg tabletti 1 x 1 p.o., Oxcarbazepin Orion 300 mg tabletti 1 x 2 p.o., Primaspan 100 mg tabletti 1 x 1 p.o., NovoRapid 100 IU/ml inj s.c. tarvittaessa aterian yhteydessä, eo., Simvastatin Orion 20 mg tabl. nostetaan annokseen 40 mg iltaisin
 Lopetetaan Plavix 75 mg tabletti ja Burana 400 mg tabletti.`
       },
       {
@@ -483,30 +477,18 @@ Lopetetaan Plavix 75 mg tabletti ja Burana 400 mg tabletti.`
         description: `Seuraavana päivänä potilaalla on leikkauksen jälkeen kohtalaista haavakipua. Liikkuminen on vähäistä ja potilas tarvitsee runsaasti apua vuoteesta ylös.
 
 Lisätään tromboosiprofylaksia ja tarvittaessa kipulääkitys:
-
-– Klexane 40 mg s.c. 1 x 1 iltaisin
-– Parasetamoli p.o. tarvittaessa kipuun, 1 x 1–3
-
-Osastolla käytössä:
-– Panadol 1 g tabletti
-– Panadol 500 mg tabletti
-
+Klexane 40 mg s.c. 1 x 1 iltaisin, Parasetamoli p.o. tarvittaessa kipuun, 1 x 1–3
 Kun Klexane aloitetaan, Primaspan 100 mg tabletti pidetään tauolla (tyyppi Tauko Klexane-kuurin ajan).
 
-Muu säännöllinen lääkitys (Metforem, Amlodipin, Oxcarbazepin, suurennettu simvastatiiniannos ja NovoRapid tarvittaessa) jatkuu ennallaan.`
+Muu säännöllinen lääkitys jatkuu ennallaan.`
       },
       {
-        title: "Päivä 3 – Pahoinvointi ja lisäkipu (i.v. + i.m.)",
+        title: "Päivä 3 – Pahoinvointi ja lisäkipu",
         description: `Kolmantena osastopäivänä potilaalla esiintyy ajoittain pahoinvointia ja hetkellisesti voimakkaampaa kipua liikkeellelähdön yhteydessä.
 
 Lisätään tarvittaessa annettavat injektiolääkkeet:
 
-– Primperan 10 mg i.v. tarvittaessa pahoinvointiin, 1 x 1–3
-– Voltaren 75 mg i.m. tarvittaessa kipuun, 1 x 1–2
-
-Osastolla käytettävissä olevat valmisteet:
-– Primperan 10 mg/ml inj i.v.
-– Voltaren 75 mg inj i.m.
+– Primperan 10 mg i.v. tarvittaessa pahoinvointiin, 1 x 1–3, Voltaren 75 mg i.m. tarvittaessa kipuun, 1 x 1–2
 
 Peruslääkitys, Klexane ja tarvittaessa parasetamoli sekä NovoRapid jatkuvat ennallaan. Primaspan on edelleen tauolla Klexanen ajan (tyyppi Tauko).`
       },
@@ -515,22 +497,19 @@ Peruslääkitys, Klexane ja tarvittaessa parasetamoli sekä NovoRapid jatkuvat e
         description: `Potilas on kuntoutunut, kävelee osastolla ja siirtyy vuoteesta tuoliin itsenäisesti. Laskimotukosriski arvioidaan pienentyneeksi.
 
 Klexane 40 mg s.c. 1 x 1 iltaisin lopetetaan.
+Primaspan 100 mg tabletti 1 x 1 p.o. aloitetaan uudelleen tauon jälkeen.
 
-Primaspan 100 mg tabletti 1 x 1 p.o. aloitetaan uudelleen tauon jälkeen (tyyppi Jatkuva).
-
-Muu lääkitys (Metforem, Amlodipin, Oxcarbazepin, suurennettu simvastatiiniannos, tarvittava parasetamoli, Primperan, Voltaren ja NovoRapid) jatkuu ennallaan.`
+Muu lääkitys jatkuu ennallaan.`
       },
       {
-        title: "Päivä 5 – Antibioottihoito (cefuroxim-kuuri, 12.12.2025–18.12.2025)",
+        title: "Päivä 5 – Antibioottihoito (cefuroxim-kuuri)",
         description: `Tänään on 12.12.2025. Potilaalle on kehittynyt hengitystieinfektioon sopiva kliininen kuva, CRP ja tulehdusarvot koholla.
 
 Aloitetaan määräaikainen antibioottihoito:
 
-– Cefuroxim 500 mg tabletti p.o. 1 x 2, 7 vuorokauden kuuri tästä aamusta lähtien.
+Cefuroxim 500 mg tabletti p.o. 1 x 2, 7 vuorokauden kuuri tästä aamusta lähtien.
 
-Kuurin kesto: 7 vrk (12.12.2025–18.12.2025).
-
-Huom: Osastolla on saatavilla myös Cefuroxim 500 mg inj i.v., mutta tässä käytetään suun kautta otettavaa tablettimuotoa.
+Kuurin kesto: 7 vrk 12.12.2025 eteenpäin.
 
 Klexane on lopetettu, Primaspan on jälleen käytössä, ja muu aiempi lääkitys jatkuu, ellei erikseen ole päätetty lopettaa.`
       }
@@ -589,7 +568,7 @@ Klexane on lopetettu, Primaspan on jälleen käytössä, ja muu aiempi lääkity
         drugName: "NovoRapid 100 IU/ml inj s.c.",
         strength: "100 IU/ml",
         form: "injektio",
-        dose: "1 x 1-3",
+        dose: "eo.",
         y: "", ay: "", a: "", ap: "", p: "", ip: "", i: "", iy: ""
       },
       {
