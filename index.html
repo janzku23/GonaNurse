@@ -1262,7 +1262,7 @@ Klexane on lopetettu, Primaspan on jälleen käytössä, ja muu aiempi lääkity
 
     function checkKlexanePresent(rows) {
       const klex = rows.find(r =>
-        r.drugName === "klexane 40 mg/0,4 ml inj s.c." &&
+        r.drugName === "klexane 40 mg/0,4 ml." &&
         r.strength === "40 mg/0,4 ml" &&
         r.form === "injektio"
       );
@@ -1288,7 +1288,7 @@ Klexane on lopetettu, Primaspan on jälleen käytössä, ja muu aiempi lääkity
 
     function checkNoKlexane(rows) {
       const klex = rows.find(r =>
-        r.drugName === "klexane 40 mg/0,4 ml inj s.c."
+        r.drugName === "klexane 40 mg/0,4 ml."
       );
       if (klex) {
         showFeedback("Klexane on määrätty lopetettavaksi – sen ei tule enää olla lääkelistalla.", false);
@@ -1456,7 +1456,7 @@ Klexane on lopetettu, Primaspan on jälleen käytössä, ja muu aiempi lääkity
         return ok ? "ok" : "error";
       }
 
-      if (row.drugName === "primperan 10 mg/ml inj i.v.") {
+      if (row.drugName === "primperan 10 mg/ml.") {
         const ok = (
           row.strength === "10 mg/ml" &&
           row.form === "injektio" &&
@@ -1468,7 +1468,7 @@ Klexane on lopetettu, Primaspan on jälleen käytössä, ja muu aiempi lääkity
         return ok ? "ok" : "error";
       }
 
-      if (row.drugName === "voltaren 75 mg inj i.m.") {
+      if (row.drugName === "voltaren 75 mg.") {
         const ok = (
           row.strength === "75 mg" &&
           row.form === "injektio" &&
@@ -1480,7 +1480,7 @@ Klexane on lopetettu, Primaspan on jälleen käytössä, ja muu aiempi lääkity
         return ok ? "ok" : "error";
       }
 
-      if (row.drugName === "klexane 40 mg/0,4 ml inj s.c.") {
+      if (row.drugName === "klexane 40 mg/0,4 ml.") {
         const iVal = (row.i || "").trim().toLowerCase();
         const okI = (iVal === "1" || /mg|g/.test(iVal));
         if (currentTaskIndex === 1 || currentTaskIndex === 2) {
